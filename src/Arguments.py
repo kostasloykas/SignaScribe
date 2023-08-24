@@ -44,6 +44,10 @@ class Arguments:
 
         try:
 
+            if (arguments.expire_date == None):
+                arguments.expire_date = datetime.strptime(
+                    arguments.expire_date, '%d-%m-%Y').year = 2026
+
             self.start_date = datetime.strptime(
                 arguments.start_date, '%d-%m-%Y').strftime('%d-%m-%Y')
 
