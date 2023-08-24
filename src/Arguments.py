@@ -63,3 +63,6 @@ class Arguments:
                 self.start_date != None and
                 self.expire_date != None)
         pass
+
+    def __str__(self) -> str:
+        return f"Argument object: start_date={self.start_date}, expire_date={self.expire_date}"
