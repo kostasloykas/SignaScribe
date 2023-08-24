@@ -1,14 +1,12 @@
 import sys
-import argparse
+from Arguments import *
 
 
 def main(parameters):
 
-    # Parameters
-    parser = argparse.ArgumentParser(prog='SignaScribe')
-    parser.add_argument('-f', '--file', required=True)
-
-    parser.parse_args()
+    # Take Parameters and check the validity
+    arg = Arguments()
+    arg.ParseArguments()
 
 
 if __name__ == "__main__":
