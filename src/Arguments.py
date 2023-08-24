@@ -1,5 +1,6 @@
 import argparse
 from datetime import datetime
+from Utility_Functions import *
 
 
 class Arguments:
@@ -8,13 +9,10 @@ class Arguments:
     manifest_id = None
     vendor_id = None
     product_id = None
-    file = None
     start_date = None
     expire_date = None
 
-    def __init__(self) -> None:
-
-        pass
+    # FIXME: ParseArguments
 
     def ParseArguments(self) -> None:
 
@@ -33,7 +31,7 @@ class Arguments:
         self.parser.add_argument('-sd', '--start_date', type=str, default=datetime.now().strftime('%d-%m-%Y'),
                                  help="The starting date of image validation in dd-mm-yy format")
         self.parser.add_argument(
-            '-ed', '--expire_date', type=str, help="The expiration date of image validation in dd-mm-yy format")
+            '-ed', '--expire_date', type=str, default=datetime.now().strftime('%d-%m-%Y'), help="The expiration date of image validation in dd-mm-yy format")
 
         # parse arguments
         arguments = self.parser.parse_args()
@@ -41,27 +39,30 @@ class Arguments:
         self.CheckArguments(arguments)
         pass
 
-    # FIXME: check the validity of arguments
-
+    # FIXME: CheckArguments
     def CheckArguments(self, arguments):
 
-        start_date = arguments.start_date
-
-        print(arguments.start_date)
-
         try:
-            print(datetime.strptime(arguments.start_date, '%d-%m-%Y'))
-            pass
-        except:
-            pass
 
-        assert (self.file != None and
-                self.manifest_id != None and
-                self.vendor_id != None and
-                self.product_id != None and
-                self.file != None and
-                self.start_date != None and
-                self.expire_date != None)
+            self.start_date = datetime.strptime(
+                arguments.start_date, '%d-%m-%Y').strftime('%d-%m-%Y')
+
+            self.expire_date = datetime.strptime(
+                arguments.expire_date, '%d-%m-%Y').strftime('%d-%m-%Y')
+
+            if (datetime.strptime(self.start_date, '%d-%m-%Y') > datetime.strptime(self.expire_date, '%d-%m-%Y')):
+                ERROR("Start date > Expire date")
+
+        except ValueError as ex:
+            ERROR(ex)
+
+        # assert (self.file != None and
+        #         self.manifest_id != None and
+        #         self.vendor_id != None and
+        #         self.product_id != None and
+        #         self.file != None and
+        #         self.start_date != None and
+        #         self.expire_date != None)
         pass
 
     def __str__(self) -> str:

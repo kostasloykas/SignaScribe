@@ -1,5 +1,5 @@
 run:
-	@python3 ./src/main.py -sd 2023-05-05
+	@python3 ./src/main.py 
 
 
 setup:
