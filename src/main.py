@@ -10,9 +10,8 @@ def main():
     DEBUG(arg.__str__())
 
     # TODO: create json object and parse the arguments
-
     json_file = arg.CreateJSON()
-    DEBUG(json_file)
+    DEBUG("JSON file: ", json_file)
 
     # TODO: take the firmware and save informations in json file
 

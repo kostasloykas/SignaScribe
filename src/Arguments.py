@@ -46,7 +46,7 @@ class Arguments:
         return
 
     # FIXME: CheckArguments
-    def CheckArguments(self, arguments):
+    def CheckArguments(self, arguments) -> None:
 
         try:
 
@@ -96,8 +96,9 @@ class Arguments:
                 self.hash_type != None)
         return
 
-    def CreateJSON(self):
-        json_file = json.dumps()
+    def CreateJSON(self) -> str:
+        json_file = json.dumps(
+            {"manifest_id": self.manifest_id, "vendor_id": self.vendor_id, "product_id": self.product_id, "start_date": self.start_date, "expire_date": self.expire_date})
 
         return json_file
 

@@ -1,4 +1,5 @@
-def DEBUG(message):
+def DEBUG(*args):
+    message = "".join(map(str, args))
     print("DEBUG:", message)
 
 
