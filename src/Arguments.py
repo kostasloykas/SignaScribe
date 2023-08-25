@@ -97,7 +97,7 @@ class Arguments:
         return
 
     def CreateJSON(self):
-        json_file = None
+        json_file = json.dumps()
 
         return json_file
 
