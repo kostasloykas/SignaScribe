@@ -1,6 +1,7 @@
 import argparse
 from datetime import datetime, timedelta
 from Utility_Functions import *
+import json
 
 
 class Arguments:
@@ -20,7 +21,7 @@ class Arguments:
 
         # define manifest fields
         self.parser.add_argument('-mi', '--manifest_id',
-                                 type=int, choices=[0], required=True, help="Manifest ID")
+                                 type=int, required=True, help="Manifest ID")
         self.parser.add_argument('-f', '--file', type=argparse.FileType("rb"), required=True,
                                  help="The file that will be signed")
         self.parser.add_argument('-ht', '--hash_type', type=str, choices=["sha256"], required=True,
@@ -42,7 +43,7 @@ class Arguments:
         arguments = self.parser.parse_args()
 
         self.CheckArguments(arguments)
-        pass
+        return
 
     # FIXME: CheckArguments
     def CheckArguments(self, arguments):
@@ -93,7 +94,12 @@ class Arguments:
                 self.start_date != None and
                 self.expire_date != None and
                 self.hash_type != None)
-        pass
+        return
+
+    def CreateJSON(self):
+        json_file = None
+
+        return json_file
 
     def __str__(self) -> str:
         return f"Argument object: manifest id={self.manifest_id} , vendor id={self.vendor_id} , product id={self.product_id} , start_date={self.start_date} , expire_date={self.expire_date} , hash type={self.hash_type} "
