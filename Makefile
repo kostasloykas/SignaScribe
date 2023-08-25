@@ -3,6 +3,7 @@ run:
 
 
 setup:
+	@pip install argparse
 
 #github push 
 push: .gitignore

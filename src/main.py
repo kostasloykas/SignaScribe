@@ -7,7 +7,6 @@ def main():
     # Take Parameters and check the validity
     arg = Arguments()
     arg.ParseArguments()
-    DEBUG(arg.__str__())
 
     # TODO: create json object and parse the arguments
     json_file = arg.CreateJSON()

@@ -98,7 +98,9 @@ class Arguments:
 
     def CreateJSON(self) -> str:
         json_file = json.dumps(
-            {"manifest_id": self.manifest_id, "vendor_id": self.vendor_id, "product_id": self.product_id, "start_date": self.start_date, "expire_date": self.expire_date})
+            {"manifest_id": self.manifest_id, "vendor_id": self.vendor_id,
+             "product_id": self.product_id, "start_date": self.start_date,
+             "expire_date": self.expire_date, "hash_type": self.hash_type})
 
         return json_file
 
