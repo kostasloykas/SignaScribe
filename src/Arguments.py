@@ -26,13 +26,13 @@ class Arguments:
         self.parser.add_argument('-ht', '--hash_type', type=str, choices=["sha256"], required=True,
                                  help="The hash algorithm that will be used")
         self.parser.add_argument(
-            '-pi', '--product_id', type=str, required=True, help="The device's product id")
+            '-pi', '--product_id', type=str, required=True, help="The device's product id in hex format")
         self.parser.add_argument(
-            '-vi', '--vendor_id', type=str, required=True, help="The device's vendor id")
+            '-vi', '--vendor_id', type=str, required=True, help="The device's vendor id in hex format")
 
         # TODO: provide the options for sign algorithm
         self.parser.add_argument('-sa', '--sign_algorithm',
-                                 type=int, required=True, choices=[0], help="Choose which digital sign algorithm you want to use")
+                                 type=str, required=True, choices=["eddsa"], help="Choose which digital sign algorithm you want to use")
         self.parser.add_argument('-sd', '--start_date', type=str, default=datetime.now().strftime('%d-%m-%Y'),
                                  help="The starting date of file validation in dd-mm-yy format")
         self.parser.add_argument(
