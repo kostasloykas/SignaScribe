@@ -68,9 +68,8 @@ class Arguments:
             self.hash_type = arguments.hash_type
 
             self.certificate = arguments.certificate.read()
-            DEBUG(self.certificate)
 
-        except ValueError as ex:
+        except Exception as ex:
             ERROR(ex)
 
         assert (self.file != None and
