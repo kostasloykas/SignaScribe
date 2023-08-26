@@ -13,6 +13,7 @@ class Arguments:
     timestamp = None
     hash_type = None
     owner_id = None
+    certificate = None
 
     # FIXME: ParseArguments
     def ParseArguments(self) -> None:
@@ -66,6 +67,9 @@ class Arguments:
             # hash type
             self.hash_type = arguments.hash_type
 
+            self.certificate = arguments.certificate.read()
+            DEBUG(self.certificate)
+
         except ValueError as ex:
             ERROR(ex)
 
@@ -75,7 +79,8 @@ class Arguments:
                 self.product_id != None and
                 self.file != None and
                 self.timestamp != None and
-                self.hash_type != None)
+                self.hash_type != None and
+                self.certificate != None)
         return
 
     def CreateJSON(self) -> str:
