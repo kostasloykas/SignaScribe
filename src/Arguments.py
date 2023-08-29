@@ -2,7 +2,6 @@ import argparse
 from datetime import datetime, timedelta
 from Utility_Functions import *
 import json
-import magic
 
 
 class Arguments:
@@ -14,7 +13,10 @@ class Arguments:
     timestamp = None
     hash_type = None
     owner_id = None
+    public_key = None
     certificate = None
+    sign_algorithm = None
+
     SUPPORTED_EXTENTIONS = ["hex", "bin", "zip"]
 
     def ParseArguments(self) -> None:
@@ -24,8 +26,10 @@ class Arguments:
         # define manifest fields
         self.parser.add_argument('-mi', '--manifest_id',
                                  type=int, required=True, help="Manifest ID")
+        self.parser.add_argument('-oi', '--owner_id',
+                                 type=str, required=True, help="Owner ID")
         self.parser.add_argument('-f', '--firmware', type=argparse.FileType("rb"), required=True,
-                                 help="The firmware")
+                                 help="The firmware that will be signed. Accepts only hex,bin and zip files.")
         self.parser.add_argument('-c', '--certificate', type=argparse.FileType("rb"), required=True,
                                  help="The certificate of owner")
         self.parser.add_argument('-ht', '--hash_type', type=str, choices=["sha256"], required=True,
@@ -35,7 +39,7 @@ class Arguments:
         self.parser.add_argument(
             '-vi', '--vendor_id', type=str, required=True, help="The device's vendor id in hex format")
         self.parser.add_argument('-p', '--public_key', type=argparse.FileType("rb"), required=True,
-                                 help="Public key file")
+                                 help="Public key file in pem format")
         self.parser.add_argument('-sa', '--sign_algorithm',
                                  type=str, required=True, choices=["eddsa"], help="Choose which digital sign algorithm you want to use")
 
@@ -52,6 +56,12 @@ class Arguments:
             # timestamp
             self.timestamp = str(datetime.now())
 
+            # public key
+            self.public_key = arguments.public_key.read()
+
+            # owner id
+            self.owner_id = arguments.owner_id
+
             # product id
             self.product_id = int(arguments.product_id, 16)
 
@@ -65,9 +75,13 @@ class Arguments:
             self.firmware = arguments.firmware.read()
             self.__CheckFirmwareExtention(arguments.firmware.name)
 
+            # sign algorithm
+            self.sign_algorithm = arguments.sign_algorithm
+
             # hash type
             self.hash_type = arguments.hash_type
 
+            # certificate
             self.certificate = arguments.certificate.read()
 
         except Exception as ex:
@@ -77,22 +91,24 @@ class Arguments:
                 self.manifest_id != None and
                 self.vendor_id != None and
                 self.product_id != None and
-                self.firmware != None and
                 self.timestamp != None and
                 self.hash_type != None and
-                self.certificate != None)
+                self.certificate != None and
+                self.public_key != None and
+                self.owner_id != None and
+                self.sign_algorithm != None)
         return
 
     def CreateJSON(self) -> str:
         json_file = json.dumps(
             {"manifest_id": self.manifest_id, "vendor_id": self.vendor_id,
-             "product_id": self.product_id, "timestamp": self.timestamp, "hash_type": self.hash_type})
+             "product_id": self.product_id, "timestamp": self.timestamp,
+             "hash_type": self.hash_type, "owner_id": self.owner_id, "Sign Algorithm": self.sign_algorithm})
 
         return json_file
 
     def __CheckFirmwareExtention(self, firmware_name: str):
-        mime = magic.Magic(mime=True)
-        extention = mime.from_file(firmware_name)
+        extention = firmware_name.split(".").pop()
 
         if not extention in self.SUPPORTED_EXTENTIONS:
             ERROR("Not supported extention of firmware file",
