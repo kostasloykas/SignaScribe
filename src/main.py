@@ -18,7 +18,7 @@ def main():
     # DEBUG(cert.certificate.subject.get_attributes_for_oid(
     #     NameOID.COMMON_NAME)[0]._value)
 
-    # TODO: create from arguments a json file
+    # create from arguments a json file
     json_file = arg.CreateJSON()
     DEBUG("JSON file: ", json_file)
 

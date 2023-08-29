@@ -17,7 +17,6 @@ class Arguments:
     certificate = None
     SUPPORTED_EXTENTIONS = ["hex", "bin", "zip"]
 
-    # FIXME: ParseArguments
     def ParseArguments(self) -> None:
 
         self.parser = argparse.ArgumentParser(prog='SignaScribe')
@@ -35,8 +34,8 @@ class Arguments:
             '-pi', '--product_id', type=str, required=True, help="The device's product id in hex format")
         self.parser.add_argument(
             '-vi', '--vendor_id', type=str, required=True, help="The device's vendor id in hex format")
-
-        # TODO: provide the options for sign algorithm
+        self.parser.add_argument('-p', '--public_key', type=argparse.FileType("rb"), required=True,
+                                 help="Public key file")
         self.parser.add_argument('-sa', '--sign_algorithm',
                                  type=str, required=True, choices=["eddsa"], help="Choose which digital sign algorithm you want to use")
 
@@ -46,7 +45,6 @@ class Arguments:
         self.CheckArguments(arguments)
         return
 
-    # FIXME: CheckArguments
     def CheckArguments(self, arguments) -> None:
 
         try:
