@@ -45,6 +45,7 @@ class Certificate:
     def __ContainsThePublicKey(self, public_key) -> bool:
         # use is instance gia to type tou public key
 
+        ERROR("telos")
         return True
 
     # TODO: IsFromTrustedCA
