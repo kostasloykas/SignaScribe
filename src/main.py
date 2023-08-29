@@ -1,4 +1,3 @@
-import sys
 from Arguments import *
 from Certificate import *
 
@@ -10,10 +9,16 @@ def main():
     arg.ParseArguments()
 
     # Load owner's certificate
-    cert = Certificate(arg.certificate)
-    # DEBUG(cert.certificate.extensions)
+    cert = Certificate(arg)
+    # DEBUG(
+    #     cert.certificate.public_key().public_bytes(
+    #         encoding=serialization.Encoding.PEM,
+    #         format=serialization.PublicFormat.SubjectPublicKeyInfo
+    #     ))
+    # DEBUG(cert.certificate.subject.get_attributes_for_oid(
+    #     NameOID.COMMON_NAME)[0]._value)
 
-    # TODO: create json object and parse the arguments
+    # TODO: create from arguments a json file
     json_file = arg.CreateJSON()
     DEBUG("JSON file: ", json_file)
 

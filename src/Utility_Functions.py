@@ -4,6 +4,6 @@ def DEBUG(*args):
 
 
 #  print error and terminate
-def ERROR(error):
+def ERROR(*error):
     print("ERROR:", error)
     exit(0)

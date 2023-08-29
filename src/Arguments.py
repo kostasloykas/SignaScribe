@@ -2,11 +2,12 @@ import argparse
 from datetime import datetime, timedelta
 from Utility_Functions import *
 import json
+import magic
 
 
 class Arguments:
 
-    file = None
+    firmware = None
     manifest_id = None
     vendor_id = None
     product_id = None
@@ -14,6 +15,7 @@ class Arguments:
     hash_type = None
     owner_id = None
     certificate = None
+    SUPPORTED_EXTENTIONS = ["hex", "bin", "zip"]
 
     # FIXME: ParseArguments
     def ParseArguments(self) -> None:
@@ -23,8 +25,8 @@ class Arguments:
         # define manifest fields
         self.parser.add_argument('-mi', '--manifest_id',
                                  type=int, required=True, help="Manifest ID")
-        self.parser.add_argument('-f', '--file', type=argparse.FileType("rb"), required=True,
-                                 help="The file that will be signed")
+        self.parser.add_argument('-f', '--firmware', type=argparse.FileType("rb"), required=True,
+                                 help="The firmware")
         self.parser.add_argument('-c', '--certificate', type=argparse.FileType("rb"), required=True,
                                  help="The certificate of owner")
         self.parser.add_argument('-ht', '--hash_type', type=str, choices=["sha256"], required=True,
@@ -62,7 +64,8 @@ class Arguments:
             self.manifest_id = arguments.manifest_id
 
             # read file
-            self.file = arguments.file.read()
+            self.firmware = arguments.firmware.read()
+            self.__CheckFirmwareExtention(arguments.firmware.name)
 
             # hash type
             self.hash_type = arguments.hash_type
@@ -72,11 +75,11 @@ class Arguments:
         except Exception as ex:
             ERROR(ex)
 
-        assert (self.file != None and
+        assert (self.firmware != None and
                 self.manifest_id != None and
                 self.vendor_id != None and
                 self.product_id != None and
-                self.file != None and
+                self.firmware != None and
                 self.timestamp != None and
                 self.hash_type != None and
                 self.certificate != None)
@@ -88,6 +91,14 @@ class Arguments:
              "product_id": self.product_id, "timestamp": self.timestamp, "hash_type": self.hash_type})
 
         return json_file
+
+    def __CheckFirmwareExtention(self, firmware_name: str):
+        mime = magic.Magic(mime=True)
+        extention = mime.from_file(firmware_name)
+
+        if not extention in self.SUPPORTED_EXTENTIONS:
+            ERROR("Not supported extention of firmware file",
+                  "SUPPORTED EXTENTIONS --->", self.SUPPORTED_EXTENTIONS)
 
     def __str__(self) -> str:
         return f"Argument object: manifest id={self.manifest_id} , vendor id={self.vendor_id} , product id={self.product_id} , timestamp={self.timestamp}  , hash type={self.hash_type} "
