@@ -17,19 +17,41 @@ class Certificate:
         if not self.__ValidAtThisTime():
             ERROR("The certificate isn't valid")
 
-        # check if owner id its the same with certificate
+        # TODO: __IsFromTrustedCA
+
+        # check if the certificate contains owner's id
+        if not self.__ContainsOwnerID(arguments.owner_id):
+            ERROR("The certificate doesn't contains owner's id")
+
         # check if public key its the same with certificate
+        if not self.__ContainsThePublicKey(arguments.public_key):
+            ERROR("The certificate doesn't contains the right public key")
 
         assert (self.certificate != None)
 
     def __TakeCertificate(self, certificate) -> x509.Certificate:
         return x509.load_pem_x509_certificate(certificate)
 
-    # TODO: IsTrustedCA
+    def __ContainsOwnerID(self, owner_id) -> bool:
+        common_name = self.certificate.subject.get_attributes_for_oid(
+            NameOID.COMMON_NAME)[0].value
+
+        if common_name != owner_id:
+            return False
+
+        return True
+
+    # TODO: __ContainsThePublicKey
+    def __ContainsThePublicKey(self, public_key) -> bool:
+        # use is instance gia to type tou public key
+
+        return True
+
+    # TODO: IsFromTrustedCA
     def __IsFromTrustedCA(self) -> bool:
         return
 
-    # TODO: IsValidAtThisTime
+    # IsValidAtThisTime
     def __ValidAtThisTime(self) -> bool:
         not_valid_after = self.certificate.not_valid_after
         not_valid_before = self.certificate.not_valid_before

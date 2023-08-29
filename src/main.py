@@ -26,6 +26,8 @@ def main():
 
     # TODO: create and save the json file
 
+    # TODO: assign the signature in json file
+
 
 if __name__ == "__main__":
     main()
