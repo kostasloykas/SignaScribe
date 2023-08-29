@@ -1,4 +1,5 @@
 from cryptography import x509
+from cryptography.hazmat.primitives.asymmetric import rsa, ec
 from Utility_Functions import *
 from cryptography.x509.oid import AttributeOID, NameOID
 from cryptography.hazmat.primitives import serialization
@@ -10,6 +11,7 @@ class Certificate:
     certificate = None
     type_of_public_key = None
     public_key = None
+    SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
 
     def __init__(self, arguments: Arguments) -> None:
         self.certificate = self.__TakeCertificate(arguments.certificate)
@@ -19,6 +21,13 @@ class Certificate:
 
         # TODO: __IsFromTrustedCA
 
+        # Take the type of public key from certificate
+        self.public_key = self.certificate.public_key()
+        self.type_of_public_key = self.__TypeOfPublicKey(self.public_key)
+
+        if not self.type_of_public_key in self.SUPPORTED_PUBLIC_KEY_ALGORITHMS:
+            ERROR("Type of public key doesn't supported")
+
         # check if the certificate contains owner's id
         if not self.__ContainsOwnerID(arguments.owner_id):
             ERROR("The certificate doesn't contains owner's id")
@@ -27,7 +36,17 @@ class Certificate:
         if not self.__ContainsThePublicKey(arguments.public_key):
             ERROR("The certificate doesn't contains the right public key")
 
+        # FIXME: assert certificate
         assert (self.certificate != None)
+
+    # __TypeOfPublicKey
+    def __TypeOfPublicKey(self, public_key) -> ec.EllipticCurvePublicKey:
+
+        for type in self.SUPPORTED_PUBLIC_KEY_ALGORITHMS:
+            if isinstance(public_key, type):
+                return type
+
+        return None
 
     def __TakeCertificate(self, certificate) -> x509.Certificate:
         return x509.load_pem_x509_certificate(certificate)
@@ -41,9 +60,8 @@ class Certificate:
 
         return True
 
-    # TODO: __ContainsThePublicKey
+    # FIXME: __ContainsThePublicKey
     def __ContainsThePublicKey(self, public_key) -> bool:
-        # use is instance gia to type tou public key
 
         ERROR("telos")
         return True
