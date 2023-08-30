@@ -90,20 +90,6 @@ class Certificate:
     # TODO: VerifyTheSignatureOfCA
     def __VerifyTheSignatureOfCA(self) -> bool:
 
-        # Create an SSL context
-        context = ssl.create_default_context(cafile=certifi.where())
-
-        certificate_data = self.data
-        DEBUG(certificate_data)
-
-        # Validate the certificate using the context
-        try:
-            certificate = context.load_verify_locations(
-                cadata=certificate_data)
-        except ssl.SSLError as e:
-            print(e)
-            return False
-
         return True
 
     def __ValidAtThisTime(self) -> bool:

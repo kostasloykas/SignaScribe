@@ -4,7 +4,6 @@ from Certificate import *
 from JSON import *
 from Zip import *
 from Signature import *
-import certifi
 
 
 def main():
