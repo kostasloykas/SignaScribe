@@ -4,6 +4,7 @@ from Certificate import *
 from JSON import *
 from Zip import *
 from Signature import *
+import certifi
 
 
 def main():
@@ -14,8 +15,8 @@ def main():
 
     # Load owner's certificate
     certificate = Certificate(arg)
-    # DEBUG(cert.certificate.subject.get_attributes_for_oid(
-    #     NameOID.COMMON_NAME)[0]._value)
+
+    return
 
     # parse the firmware
     firmware = Firmware(arg)

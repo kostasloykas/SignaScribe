@@ -5,22 +5,34 @@ from cryptography.x509.oid import AttributeOID, NameOID
 from cryptography.hazmat.primitives import serialization
 from datetime import datetime
 from Arguments import *
+import certifi
+import ssl
 
 
 class Certificate:
+
+    data = None
     certificate = None
     type_of_public_key = None
     public_key = None
+
     # FIXME: SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
     SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
 
     def __init__(self, arguments: Arguments) -> None:
-        self.certificate = self.__TakeCertificate(arguments.certificate)
+        self.data = arguments.certificate.read()
+        self.certificate = self.__TakeCertificate(self.data)
+
+        # TODO: __VerifyTheSignatureOfCA
+        if not self.__VerifyTheSignatureOfCA():
+            ERROR("Certificate validation failed")
+        else:
+            print("Certificate validation success")
+
+        # TODO: __IsFromTrustedCA
 
         if not self.__ValidAtThisTime():
             ERROR("The certificate isn't valid")
-
-        # TODO: __IsFromTrustedCA
 
         # Take the type of public key from certificate
         self.public_key = self.certificate.public_key()
@@ -37,7 +49,7 @@ class Certificate:
         if not self.__ContainsOwnerID(arguments.owner_id):
             ERROR("The certificate doesn't contains owner's id")
 
-        assert (self.certificate != None and self.public_key != None)
+        assert self.certificate and self.public_key and self.data
 
     def __TypeOfPublicKey(self, public_key) -> ec.EllipticCurvePublicKey:
 
@@ -77,7 +89,22 @@ class Certificate:
 
     # TODO: VerifyTheSignatureOfCA
     def __VerifyTheSignatureOfCA(self) -> bool:
-        return
+
+        # Create an SSL context
+        context = ssl.create_default_context(cafile=certifi.where())
+
+        certificate_data = self.data
+        DEBUG(certificate_data)
+
+        # Validate the certificate using the context
+        try:
+            certificate = context.load_verify_locations(
+                cadata=certificate_data)
+        except ssl.SSLError as e:
+            print(e)
+            return False
+
+        return True
 
     def __ValidAtThisTime(self) -> bool:
         not_valid_after = self.certificate.not_valid_after

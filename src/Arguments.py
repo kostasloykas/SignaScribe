@@ -85,7 +85,7 @@ class Arguments:
             self.hash_type = arguments.hash_type
 
             # certificate
-            self.certificate = arguments.certificate.read()
+            self.certificate = arguments.certificate
 
         except Exception as ex:
             ERROR(ex)
