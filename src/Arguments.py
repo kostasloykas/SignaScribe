@@ -90,16 +90,16 @@ class Arguments:
         except Exception as ex:
             ERROR(ex)
 
-        assert (self.firmware != None and
-                self.manifest_id != None and
-                self.vendor_id != None and
-                self.product_id != None and
-                self.timestamp != None and
-                self.hash_type != None and
-                self.certificate != None and
-                self.public_key != None and
-                self.owner_id != None and
-                self.sign_algorithm != None and
+        assert (self.firmware and
+                self.manifest_id and
+                self.vendor_id and
+                self.product_id and
+                self.timestamp and
+                self.hash_type and
+                self.certificate and
+                self.public_key and
+                self.owner_id and
+                self.sign_algorithm and
                 self.firmware_type)
         return
 

@@ -14,10 +14,10 @@ class JSON:
         self.arguments = arguments
         self.firmware = firmware
 
+        DEBUG("JSON file: ", self)
         assert self.arguments != None and self.firmware != None
 
     def SaveFile(self) -> None:
-        DEBUG(os.getcwd())
         new_directory = "./build"
 
         # Check if the directory doesn't exist
@@ -25,10 +25,11 @@ class JSON:
             # Create the directory
             os.makedirs(new_directory)
 
-        # f = open(os.getcwd() + "/build/informations.json", "w")
         f = open("./build/informations.json", "w")
         f.write(self.__str__())
         f.close()
+
+        print("JSON file saved")
         return
 
     def __str__(self) -> str:
