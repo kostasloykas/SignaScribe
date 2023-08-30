@@ -99,14 +99,6 @@ class Arguments:
                 self.sign_algorithm != None)
         return
 
-    def CreateJSON(self) -> str:
-        json_file = json.dumps(
-            {"manifest_id": self.manifest_id, "vendor_id": self.vendor_id,
-             "product_id": self.product_id, "timestamp": self.timestamp,
-             "hash_type": self.hash_type, "owner_id": self.owner_id, "Sign Algorithm": self.sign_algorithm})
-
-        return json_file
-
     def __CheckFirmwareExtention(self, firmware_name: str):
         extention = firmware_name.split(".").pop()
 

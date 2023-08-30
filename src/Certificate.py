@@ -28,13 +28,13 @@ class Certificate:
         if not self.type_of_public_key in self.SUPPORTED_PUBLIC_KEY_ALGORITHMS:
             ERROR("Type of public key doesn't supported")
 
+        # check if public key its the same with certificate
+        if not self.__ContainsThePublicKey(arguments.public_key):
+            ERROR("Public key is not the same with certificate's public key")
+
         # check if the certificate contains owner's id
         if not self.__ContainsOwnerID(arguments.owner_id):
             ERROR("The certificate doesn't contains owner's id")
-
-        # check if public key its the same with certificate
-        if not self.__ContainsThePublicKey(arguments.public_key):
-            ERROR("The certificate doesn't contains the right public key")
 
         # FIXME: assert certificate
         assert (self.certificate != None)
@@ -60,10 +60,17 @@ class Certificate:
 
         return True
 
-    # FIXME: __ContainsThePublicKey
-    def __ContainsThePublicKey(self, public_key) -> bool:
+    # __ContainsThePublicKey
+    def __ContainsThePublicKey(self, argument_public_key) -> bool:
+        assert self.public_key != None and argument_public_key != None
 
-        ERROR("telos")
+        # convert certificate's public key into bytes
+        bytes_public_key = self.public_key.public_bytes(encoding=serialization.Encoding.PEM,
+                                                        format=serialization.PublicFormat.SubjectPublicKeyInfo)
+
+        if (bytes_public_key != argument_public_key):
+            return False
+
         return True
 
     # TODO: IsFromTrustedCA

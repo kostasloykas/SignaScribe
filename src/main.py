@@ -1,5 +1,6 @@
 from Arguments import *
 from Certificate import *
+from JSON import *
 
 
 def main():
@@ -19,7 +20,7 @@ def main():
     #     NameOID.COMMON_NAME)[0]._value)
 
     # create from arguments a json file
-    json_file = arg.CreateJSON()
+    json_file = JSON(arg, cert)
     DEBUG("JSON file: ", json_file)
 
     # TODO: take the firmware and save informations in json file
