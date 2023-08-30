@@ -1,16 +1,18 @@
 from typing import Any
 from Arguments import Arguments
-from Certificate import Certificate
+from Firmware import Firmware
 import json
 
 
 class JSON:
     arguments = None
+    firmware = None
 
-    def __init__(self, arguments: Arguments) -> None:
+    def __init__(self, arguments: Arguments, firmware: Firmware) -> None:
         self.arguments = arguments
+        self.firmware = firmware
 
-        assert self.arguments != None
+        assert self.arguments != None and self.firmware != None
 
     # FIXME: __str__ JSON  class
     def __str__(self) -> str:

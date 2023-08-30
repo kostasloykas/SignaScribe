@@ -37,7 +37,6 @@ class Certificate:
         if not self.__ContainsOwnerID(arguments.owner_id):
             ERROR("The certificate doesn't contains owner's id")
 
-        # FIXME: assert certificate
         assert (self.certificate != None and self.public_key != None)
 
     def __TypeOfPublicKey(self, public_key) -> ec.EllipticCurvePublicKey:

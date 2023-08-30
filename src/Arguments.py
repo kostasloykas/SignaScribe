@@ -6,6 +6,7 @@ from Utility_Functions import *
 class Arguments:
 
     firmware = None
+    firmware_type = None
     manifest_id = None
     vendor_id = None
     product_id = None
@@ -72,7 +73,10 @@ class Arguments:
 
             # read file
             self.firmware = arguments.firmware.read()
-            self.__CheckFirmwareExtention(arguments.firmware.name)
+
+            # firmware type
+            self.firmware_type = self.__TakeFirmwareExtention(
+                arguments.firmware.name)
 
             # sign algorithm
             self.sign_algorithm = arguments.sign_algorithm
@@ -95,15 +99,17 @@ class Arguments:
                 self.certificate != None and
                 self.public_key != None and
                 self.owner_id != None and
-                self.sign_algorithm != None)
+                self.sign_algorithm != None and
+                self.firmware_type)
         return
 
-    def __CheckFirmwareExtention(self, firmware_name: str):
+    def __TakeFirmwareExtention(self, firmware_name: str) -> str:
         extention = firmware_name.split(".").pop()
 
         if not extention in self.SUPPORTED_EXTENTIONS:
             ERROR("Not supported extention of firmware file",
                   "SUPPORTED EXTENTIONS --->", self.SUPPORTED_EXTENTIONS)
+        return extention
 
     def __str__(self) -> str:
         return f"Argument object: manifest id={self.manifest_id} , vendor id={self.vendor_id} , product id={self.product_id} , timestamp={self.timestamp}  , hash type={self.hash_type} "

@@ -1,4 +1,5 @@
 from Arguments import *
+from Firmware import *
 from Certificate import *
 from JSON import *
 
@@ -14,14 +15,14 @@ def main():
     # DEBUG(cert.certificate.subject.get_attributes_for_oid(
     #     NameOID.COMMON_NAME)[0]._value)
 
-    # TODO: take the firmware and save informations in json file
-
+    # parse the firmware
+    firmware = Firmware(arg)
     # TODO: create and save the json file
 
     # TODO: make a signature file and write inside the signature
 
     # create from arguments a json file
-    json_file = JSON(arg)
+    json_file = JSON(arg, firmware)
     DEBUG("JSON file: ", json_file)
 
 
