@@ -1,6 +1,5 @@
 from Utility_Functions import *
 from Arguments import Arguments
-# FIXME: class Firmware
 
 
 class Firmware:
@@ -14,7 +13,6 @@ class Firmware:
         self.size = len(arguments.firmware)
         self.type = arguments.firmware_type
 
-        DEBUG(self.size, self.type)
         assert self.size and self.type
 
     pass

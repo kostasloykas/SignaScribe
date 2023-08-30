@@ -17,12 +17,15 @@ def main():
 
     # parse the firmware
     firmware = Firmware(arg)
-    # TODO: create and save the json file
 
     # TODO: make a signature file and write inside the signature
 
-    # create from arguments a json file
+    # TODO: create and save the json file
     json_file = JSON(arg, firmware)
+    json_file.SaveFile()
+
+    # TODO: create zip file
+
     DEBUG("JSON file: ", json_file)
 
 
