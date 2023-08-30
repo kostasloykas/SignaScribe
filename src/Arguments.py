@@ -1,7 +1,6 @@
 import argparse
 from datetime import datetime, timedelta
 from Utility_Functions import *
-import json
 
 
 class Arguments:

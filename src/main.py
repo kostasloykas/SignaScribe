@@ -11,23 +11,18 @@ def main():
 
     # Load owner's certificate
     cert = Certificate(arg)
-    # DEBUG(
-    #     cert.certificate.public_key().public_bytes(
-    #         encoding=serialization.Encoding.PEM,
-    #         format=serialization.PublicFormat.SubjectPublicKeyInfo
-    #     ))
     # DEBUG(cert.certificate.subject.get_attributes_for_oid(
     #     NameOID.COMMON_NAME)[0]._value)
-
-    # create from arguments a json file
-    json_file = JSON(arg, cert)
-    DEBUG("JSON file: ", json_file)
 
     # TODO: take the firmware and save informations in json file
 
     # TODO: create and save the json file
 
     # TODO: make a signature file and write inside the signature
+
+    # create from arguments a json file
+    json_file = JSON(arg)
+    DEBUG("JSON file: ", json_file)
 
 
 if __name__ == "__main__":

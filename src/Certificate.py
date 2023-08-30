@@ -11,6 +11,7 @@ class Certificate:
     certificate = None
     type_of_public_key = None
     public_key = None
+    # FIXME: SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
     SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
 
     def __init__(self, arguments: Arguments) -> None:
@@ -37,9 +38,8 @@ class Certificate:
             ERROR("The certificate doesn't contains owner's id")
 
         # FIXME: assert certificate
-        assert (self.certificate != None)
+        assert (self.certificate != None and self.public_key != None)
 
-    # __TypeOfPublicKey
     def __TypeOfPublicKey(self, public_key) -> ec.EllipticCurvePublicKey:
 
         for type in self.SUPPORTED_PUBLIC_KEY_ALGORITHMS:
@@ -60,7 +60,6 @@ class Certificate:
 
         return True
 
-    # __ContainsThePublicKey
     def __ContainsThePublicKey(self, argument_public_key) -> bool:
         assert self.public_key != None and argument_public_key != None
 
@@ -77,7 +76,10 @@ class Certificate:
     def __IsFromTrustedCA(self) -> bool:
         return
 
-    # IsValidAtThisTime
+    # TODO: VerifyTheSignatureOfCA
+    def __VerifyTheSignatureOfCA(self) -> bool:
+        return
+
     def __ValidAtThisTime(self) -> bool:
         not_valid_after = self.certificate.not_valid_after
         not_valid_before = self.certificate.not_valid_before
