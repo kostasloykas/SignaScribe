@@ -9,6 +9,7 @@ from Utility_Functions import *
 class JSON:
     arguments = None
     firmware = None
+    path = "informations.json"
 
     def __init__(self, arguments: Arguments, firmware: Firmware) -> None:
         self.arguments = arguments
@@ -18,14 +19,7 @@ class JSON:
         assert self.arguments != None and self.firmware != None
 
     def SaveFile(self) -> None:
-        new_directory = "./build"
-
-        # Check if the directory doesn't exist
-        if not os.path.exists(new_directory):
-            # Create the directory
-            os.makedirs(new_directory)
-
-        f = open("./build/informations.json", "w")
+        f = open(self.path, "w")
         f.write(self.__str__())
         f.close()
 

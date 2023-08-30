@@ -2,6 +2,8 @@ from Arguments import *
 from Firmware import *
 from Certificate import *
 from JSON import *
+from Zip import *
+from Signature import *
 
 
 def main():
@@ -11,7 +13,7 @@ def main():
     arg.ParseArguments()
 
     # Load owner's certificate
-    cert = Certificate(arg)
+    certificate = Certificate(arg)
     # DEBUG(cert.certificate.subject.get_attributes_for_oid(
     #     NameOID.COMMON_NAME)[0]._value)
 
@@ -19,6 +21,7 @@ def main():
     firmware = Firmware(arg)
 
     # TODO: make a signature file and write the signature
+    signature = Signature()
 
     # TODO: create json file
     json_file = JSON(arg, firmware)
@@ -26,6 +29,8 @@ def main():
 
     # TODO: create zip file and save inside firmware,
     # json file ,  certificate and signature
+    zip = Zip(firmware, signature, certificate, json_file)
+    zip.SaveFile()
 
 
 if __name__ == "__main__":

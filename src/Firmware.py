@@ -15,4 +15,8 @@ class Firmware:
 
         assert self.size and self.type
 
+    # TODO: SaveFile
+    def SaveFile() -> None:
+        return
+
     pass

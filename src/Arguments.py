@@ -91,7 +91,7 @@ class Arguments:
             ERROR(ex)
 
         assert (self.firmware and
-                self.manifest_id and
+                self.manifest_id != None and
                 self.vendor_id and
                 self.product_id and
                 self.timestamp and
