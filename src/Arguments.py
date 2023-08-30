@@ -72,7 +72,7 @@ class Arguments:
             self.manifest_id = arguments.manifest_id
 
             # read file
-            self.firmware = arguments.firmware.read()
+            self.firmware = arguments.firmware
 
             # firmware type
             self.firmware_type = self.__TakeFirmwareExtention(

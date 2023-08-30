@@ -20,17 +20,18 @@ def main():
     # parse the firmware
     firmware = Firmware(arg)
 
-    # TODO: make a signature file and write the signature
-    signature = Signature()
-
-    # TODO: create json file
+    # create json file
     json_file = JSON(arg, firmware)
     json_file.SaveFile()
 
-    # TODO: create zip file and save inside firmware,
-    # json file ,  certificate and signature
-    zip = Zip(firmware, signature, certificate, json_file)
-    zip.SaveFile()
+    # # TODO: make a signature file and write the signature
+    # signature = Signature()
+    # signature.SaveFile()
+
+    # # TODO: create zip file and save inside firmware,
+    # # json file , certificate and signature
+    # zip = Zip(firmware, signature, certificate, json_file)
+    # zip.SaveFile()
 
 
 if __name__ == "__main__":

@@ -11,7 +11,6 @@ class Zip:
     signature = None
     json = None
     certificate = None
-    path = "./build/tilergatis.zip"
 
     def __init__(self, firmware: Firmware, signature: Signature, certificate: Certificate, json: JSON) -> None:
         assert firmware and signature and certificate and json
@@ -39,7 +38,7 @@ class Zip:
         file_paths = [self.json.path]
 
         # Create a new ZIP archive and add files to it
-        with ZipFile(self.path, 'w') as zip:
+        with ZipFile("./build/tilergatis.zip", 'w') as zip:
             for file_path in file_paths:
                 # Add the file to the ZIP archive
                 zip.write(file_path)
