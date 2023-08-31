@@ -24,11 +24,11 @@ def main():
     json_file = JSON(arg, firmware)
     json_file.SaveFile()
 
-    # # TODO: make a signature file and write the signature
+    # TODO: make a signature file and write the signature
     # signature = Signature()
     # signature.SaveFile()
 
-    # # TODO: create zip file and save inside firmware,
+    # TODO: create zip file and save inside firmware,
     # # json file , certificate and signature
     # zip = Zip(firmware, signature, certificate, json_file)
     # zip.SaveFile()

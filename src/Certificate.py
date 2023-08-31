@@ -5,8 +5,9 @@ from cryptography.x509.oid import AttributeOID, NameOID
 from cryptography.hazmat.primitives import serialization
 from datetime import datetime
 from Arguments import *
-import certifi
+from cryptography.hazmat.backends import default_backend
 import ssl
+from OpenSSL import crypto
 
 
 class Certificate:
@@ -28,8 +29,6 @@ class Certificate:
             ERROR("Certificate validation failed")
         else:
             print("Certificate validation success")
-
-        # TODO: __IsFromTrustedCA
 
         if not self.__ValidAtThisTime():
             ERROR("The certificate isn't valid")
@@ -60,7 +59,7 @@ class Certificate:
         return None
 
     def __TakeCertificate(self, certificate) -> x509.Certificate:
-        return x509.load_pem_x509_certificate(certificate)
+        return x509.load_pem_x509_certificate(certificate, default_backend())
 
     def __ContainsOwnerID(self, owner_id) -> bool:
         common_name = self.certificate.subject.get_attributes_for_oid(
@@ -83,14 +82,15 @@ class Certificate:
 
         return True
 
-    # TODO: IsFromTrustedCA
-    def __IsFromTrustedCA(self) -> bool:
-        return
-
     # TODO: VerifyTheSignatureOfCA
+
     def __VerifyTheSignatureOfCA(self) -> bool:
 
-        return True
+        url = 'www.example.com'
+        data = ssl.get_server_certificate((url, 443))
+        print(data)
+
+        return False
 
     def __ValidAtThisTime(self) -> bool:
         not_valid_after = self.certificate.not_valid_after
