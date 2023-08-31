@@ -6,22 +6,25 @@ from cryptography.hazmat.primitives import serialization
 from datetime import datetime
 from Arguments import *
 from cryptography.hazmat.backends import default_backend
-import ssl
 from OpenSSL import crypto
 
 
 class Certificate:
 
     data = None
-    certificate = None
     type_of_public_key = None
     public_key = None
+    root = None
+    intermediate = None
+    certificate = None
 
     # FIXME: SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
     SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
 
     def __init__(self, arguments: Arguments) -> None:
         self.data = arguments.certificate.read()
+        # TODO: self.__TakeRootCertificate(self.data)
+        # TODO: self.__TakeIntermediateCertificates(self.data)
         self.certificate = self.__TakeCertificate(self.data)
 
         # TODO: __VerifyTheSignatureOfCA
@@ -83,12 +86,13 @@ class Certificate:
         return True
 
     # TODO: VerifyTheSignatureOfCA
-
     def __VerifyTheSignatureOfCA(self) -> bool:
+        store = crypto.X509Store()
+        store.add_cert()
 
-        url = 'www.example.com'
-        data = ssl.get_server_certificate((url, 443))
-        print(data)
+        # root
+        # intermmidiate
+        # client certificate
 
         return False
 
