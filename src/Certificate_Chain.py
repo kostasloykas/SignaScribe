@@ -40,14 +40,14 @@ class Certificate_Chain:
         # Take the type of public key from certificate
         self.public_key = self.certificate.get_pubkey()
         self.type_of_public_key = self.public_key.type()
-        # TODO: public key type must be in supoorted algorithms
 
+        # TODO: public key type must be in supoorted algorithms
         # if not self.type_of_public_key in self.SUPPORTED_PUBLIC_KEY_ALGORITHMS:
         #     ERROR("Type of public key doesn't supported")
 
-        # # check if public key its the same with certificate
-        # if not self.__ContainsThePublicKey(arguments.public_key):
-        #     ERROR("Public key is not the same with certificate's public key")
+        # check if public key its the same with certificate
+        if not self.__ContainsThePublicKey(arguments.public_key):
+            ERROR("Public key is not the same with certificate's public key")
 
         # # check if the certificate contains owner's id
         # if not self.__ContainsOwnerID(arguments.owner_id):
@@ -69,7 +69,7 @@ class Certificate_Chain:
     def __CertificateChainIsNotValid(self, certificate, intermediate, root: crypto.X509) -> bool:
         assert certificate and intermediate and root
 
-        # load trusted certificates
+        # load trusted certificates and add them to x509 store
         store = crypto.X509Store()
         for trusted_cert in self.__LoadTrustedCertificates(certifi.where()):
             store.add_cert(trusted_cert)
@@ -115,7 +115,7 @@ class Certificate_Chain:
                 x509_cert = crypto.load_certificate(
                     crypto.FILETYPE_PEM, cert)
                 trusted_certificates.append(x509_cert)
-            except crypto.Error as e:
+            except:
                 # Handle any errors in certificate loading
                 print(f"Error loading certificate: {e}")
 
