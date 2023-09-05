@@ -1,5 +1,4 @@
-from cryptography import x509
-from cryptography.hazmat.primitives.asymmetric import rsa, ec
+from cryptography.hazmat.primitives.asymmetric import ec
 from Utility_Functions import *
 from cryptography.x509.oid import AttributeOID, NameOID
 from cryptography.hazmat.primitives import serialization
@@ -25,6 +24,7 @@ class Certificate:
     def __init__(self, arguments: Arguments) -> None:
         self.data = arguments.certificate.read()
 
+        # take root,intermidiate and owner certificates from file
         self.certificates = self.__DistinguishCertificates(self.data)
 
         self.certificate = self.__TakeOwnerCertificate(self.certificates)
@@ -35,14 +35,8 @@ class Certificate:
         if self.__CertificateChainIsNotValid(self.certificate, self.intermediate, self.root):
             ERROR("Certificate chain validation failed")
 
-        # # TODO: __VerifyTheSignatureOfCA
-        # if not self.__VerifyTheSignatureOfCA():
-        #     ERROR("Certificate validation failed")
-        # else:
-        #     print("Certificate validation success")
-
-        # if not self.__ValidAtThisTime():
-        #     ERROR("The certificate isn't valid")
+        if not self.__ValidAtThisTime():
+            ERROR("The certificate isn't valid")
 
         # # Take the type of public key from certificate
         # self.public_key = self.certificate.public_key()
@@ -143,8 +137,11 @@ class Certificate:
         return True
 
     def __ValidAtThisTime(self) -> bool:
-        not_valid_after = self.certificate.not_valid_after
-        not_valid_before = self.certificate.not_valid_before
+        date_format = "%Y%m%d%H%M%SZ"  # SSL certificate date format (UTC)
+        not_valid_after = datetime.strptime(
+            self.certificate.get_notAfter().decode('utf-8'), date_format)
+        not_valid_before = datetime.strptime(
+            self.certificate.get_notBefore().decode('utf-8'), date_format)
 
         if datetime.now() > not_valid_after or datetime.now() < not_valid_before:
             return False  # the certificate isn't in valid timestamp
