@@ -6,6 +6,7 @@ from datetime import datetime
 from Arguments import *
 from cryptography.hazmat.backends import default_backend
 from OpenSSL import crypto
+import certifi
 
 
 class Certificate_Chain:
@@ -29,8 +30,6 @@ class Certificate_Chain:
         self.intermediate = self.__TakeIntermediateCertificate(
             self.certificates)
         self.root = self.__TakeRootCertificate(self.certificates)
-
-        # TODO: load trusted CA's
 
         if self.__CertificateChainIsNotValid(self.certificate, self.intermediate, self.root):
             ERROR("Certificate chain validation failed")
@@ -70,8 +69,10 @@ class Certificate_Chain:
     def __CertificateChainIsNotValid(self, certificate, intermediate, root: crypto.X509) -> bool:
         assert certificate and intermediate and root
 
+        # load trusted certificates
         store = crypto.X509Store()
-        store.add_cert(root)
+        for trusted_cert in self.__LoadTrustedCertificates(certifi.where()):
+            store.add_cert(trusted_cert)
 
         # Check the indermidiate chain certificates before adding it to the store
         store_ctx = crypto.X509StoreContext(
@@ -95,6 +96,30 @@ class Certificate_Chain:
             return True
 
         return False
+
+    def __LoadTrustedCertificates(self, path):
+        trusted_certificates = []
+
+        # Load the CA certificates from the bundle
+        with open(path, 'rb') as ca_file:
+            ca_bundle = ca_file.read()
+
+        # Create a list to store X509 certificate objects
+        all_certificates = self.__DistinguishCertificates(ca_bundle)
+        all_certificates.pop(len(all_certificates)-1)
+
+        # Parse and load each certificate in the bundle
+        for cert in all_certificates:
+            try:
+
+                x509_cert = crypto.load_certificate(
+                    crypto.FILETYPE_PEM, cert)
+                trusted_certificates.append(x509_cert)
+            except crypto.Error as e:
+                # Handle any errors in certificate loading
+                print(f"Error loading certificate: {e}")
+
+        return trusted_certificates
 
     def __TakeOwnerCertificate(self, certificates) -> crypto.X509:
         return crypto.load_certificate(
