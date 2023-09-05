@@ -1,5 +1,5 @@
 from JSON import JSON
-from Certificate import Certificate
+from Certificate_Chain import Certificate_Chain
 from Firmware import Firmware
 from Signature import Signature
 import os
@@ -12,7 +12,7 @@ class Zip:
     json = None
     certificate = None
 
-    def __init__(self, firmware: Firmware, signature: Signature, certificate: Certificate, json: JSON) -> None:
+    def __init__(self, firmware: Firmware, signature: Signature, certificate: Certificate_Chain, json: JSON) -> None:
         assert firmware and signature and certificate and json
 
         self.signature = signature

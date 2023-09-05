@@ -8,7 +8,7 @@ from cryptography.hazmat.backends import default_backend
 from OpenSSL import crypto
 
 
-class Certificate:
+class Certificate_Chain:
 
     data = None
     type_of_public_key = None
@@ -53,7 +53,7 @@ class Certificate:
         # if not self.__ContainsOwnerID(arguments.owner_id):
         #     ERROR("The certificate doesn't contains owner's id")
 
-        # assert self.certificate and self.public_key and self.data
+        assert self.certificates and self.data and self.certificate and self.intermediate and self.root
 
     def __DistinguishCertificates(self, data) -> []:
         certificates = []

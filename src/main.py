@@ -1,6 +1,6 @@
 from Arguments import *
 from Firmware import *
-from Certificate import *
+from Certificate_Chain import Certificate_Chain
 from JSON import *
 from Zip import *
 from Signature import *
@@ -13,7 +13,7 @@ def main():
     arg.ParseArguments()
 
     # Load owner's certificate
-    certificate = Certificate(arg)
+    certificate = Certificate_Chain(arg)
 
     return
 
