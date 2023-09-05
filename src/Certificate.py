@@ -17,41 +17,69 @@ class Certificate:
     root = None
     intermediate = None
     certificate = None
+    certificates = []
 
     # FIXME: SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
     SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
 
     def __init__(self, arguments: Arguments) -> None:
         self.data = arguments.certificate.read()
-        # TODO: self.__TakeRootCertificate(self.data)
-        # TODO: self.__TakeIntermediateCertificates(self.data)
-        self.certificate = self.__TakeCertificate(self.data)
 
-        # TODO: __VerifyTheSignatureOfCA
-        if not self.__VerifyTheSignatureOfCA():
-            ERROR("Certificate validation failed")
-        else:
-            print("Certificate validation success")
+        # distinguish certificates
+        for cert in self.data.split(b'-----END CERTIFICATE-----\n'):
+            # Re-add the "-----END CERTIFICATE-----" line
+            if (not b'-----END CERTIFICATE-----' in cert):
+                cert += b'-----END CERTIFICATE-----\n'
 
-        if not self.__ValidAtThisTime():
-            ERROR("The certificate isn't valid")
+            self.certificates.append(cert)
 
-        # Take the type of public key from certificate
-        self.public_key = self.certificate.public_key()
-        self.type_of_public_key = self.__TypeOfPublicKey(self.public_key)
+        self.certificate = self.__TakeOwnerCertificate(self.certificates)
+        self.intermediate = self.__TakeIntermediateCertificate(
+            self.certificates)
+        self.root = self.__TakeRootCertificate(self.certificates)
 
-        if not self.type_of_public_key in self.SUPPORTED_PUBLIC_KEY_ALGORITHMS:
-            ERROR("Type of public key doesn't supported")
+        if self.__CertificateChainIsNotValid(self.certificate, self.intermediate, self.root):
+            ERROR("Certificate chain validation failed")
 
-        # check if public key its the same with certificate
-        if not self.__ContainsThePublicKey(arguments.public_key):
-            ERROR("Public key is not the same with certificate's public key")
+        # # TODO: __VerifyTheSignatureOfCA
+        # if not self.__VerifyTheSignatureOfCA():
+        #     ERROR("Certificate validation failed")
+        # else:
+        #     print("Certificate validation success")
 
-        # check if the certificate contains owner's id
-        if not self.__ContainsOwnerID(arguments.owner_id):
-            ERROR("The certificate doesn't contains owner's id")
+        # if not self.__ValidAtThisTime():
+        #     ERROR("The certificate isn't valid")
 
-        assert self.certificate and self.public_key and self.data
+        # # Take the type of public key from certificate
+        # self.public_key = self.certificate.public_key()
+        # self.type_of_public_key = self.__TypeOfPublicKey(self.public_key)
+
+        # if not self.type_of_public_key in self.SUPPORTED_PUBLIC_KEY_ALGORITHMS:
+        #     ERROR("Type of public key doesn't supported")
+
+        # # check if public key its the same with certificate
+        # if not self.__ContainsThePublicKey(arguments.public_key):
+        #     ERROR("Public key is not the same with certificate's public key")
+
+        # # check if the certificate contains owner's id
+        # if not self.__ContainsOwnerID(arguments.owner_id):
+        #     ERROR("The certificate doesn't contains owner's id")
+
+        # assert self.certificate and self.public_key and self.data
+
+    def __CertificateChainIsNotValid(self, certificate, intermediate, root) -> bool:
+        assert certificate and intermediate and root
+
+        crypto.X509()
+        store = crypto.X509Store()
+        store.add_cert(root)
+
+        DEBUG(intermediate)
+        # Check the chain certificate before adding it to the store
+        store_ctx = crypto.X509StoreContext(store, intermediate)
+        store_ctx.verify_certificate()
+
+        return True
 
     def __TypeOfPublicKey(self, public_key) -> ec.EllipticCurvePublicKey:
 
@@ -61,8 +89,17 @@ class Certificate:
 
         return None
 
-    def __TakeCertificate(self, certificate) -> x509.Certificate:
-        return x509.load_pem_x509_certificate(certificate, default_backend())
+    def __TakeOwnerCertificate(self, certificates) -> crypto.X509:
+        return crypto.load_certificate(
+            crypto.FILETYPE_PEM, certificates[0])
+
+    def __TakeIntermediateCertificate(self, certificates) -> crypto.X509:
+        return crypto.load_certificate(
+            crypto.FILETYPE_PEM, certificates[1])
+
+    def __TakeRootCertificate(self, certificates) -> crypto.X509:
+        return crypto.load_certificate(
+            crypto.FILETYPE_PEM, certificates[2])
 
     def __ContainsOwnerID(self, owner_id) -> bool:
         common_name = self.certificate.subject.get_attributes_for_oid(
@@ -84,17 +121,6 @@ class Certificate:
             return False
 
         return True
-
-    # TODO: VerifyTheSignatureOfCA
-    def __VerifyTheSignatureOfCA(self) -> bool:
-        store = crypto.X509Store()
-        store.add_cert()
-
-        # root
-        # intermmidiate
-        # client certificate
-
-        return False
 
     def __ValidAtThisTime(self) -> bool:
         not_valid_after = self.certificate.not_valid_after
