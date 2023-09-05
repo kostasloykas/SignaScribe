@@ -25,13 +25,7 @@ class Certificate:
     def __init__(self, arguments: Arguments) -> None:
         self.data = arguments.certificate.read()
 
-        # distinguish certificates
-        for cert in self.data.split(b'-----END CERTIFICATE-----\n'):
-            # Re-add the "-----END CERTIFICATE-----" line
-            if (not b'-----END CERTIFICATE-----' in cert):
-                cert += b'-----END CERTIFICATE-----\n'
-
-            self.certificates.append(cert)
+        self.certificates = self.__DistinguishCertificates(self.data)
 
         self.certificate = self.__TakeOwnerCertificate(self.certificates)
         self.intermediate = self.__TakeIntermediateCertificate(
@@ -67,19 +61,45 @@ class Certificate:
 
         # assert self.certificate and self.public_key and self.data
 
-    def __CertificateChainIsNotValid(self, certificate, intermediate, root) -> bool:
+    def __DistinguishCertificates(self, data) -> []:
+        certificates = []
+
+        for cert in data.split(b'-----END CERTIFICATE-----\n'):
+            # Re-add the "-----END CERTIFICATE-----" line
+            if (not b'-----END CERTIFICATE-----' in cert):
+                cert += b'-----END CERTIFICATE-----\n'
+
+            certificates.append(cert)
+        return certificates
+
+    def __CertificateChainIsNotValid(self, certificate, intermediate, root: crypto.X509) -> bool:
         assert certificate and intermediate and root
 
-        crypto.X509()
         store = crypto.X509Store()
         store.add_cert(root)
 
-        DEBUG(intermediate)
-        # Check the chain certificate before adding it to the store
-        store_ctx = crypto.X509StoreContext(store, intermediate)
-        store_ctx.verify_certificate()
+        # Check the indermidiate chain certificates before adding it to the store
+        store_ctx = crypto.X509StoreContext(
+            store, intermediate)
 
-        return True
+        # verify intermidiate certificate
+        try:
+            store_ctx.verify_certificate()
+        except:
+            return True
+
+        # add intermidiate certificate as trusted
+        store.add_cert(intermediate)
+        store_ctx = crypto.X509StoreContext(
+            store, certificate)
+
+        # verify owner certificate
+        try:
+            store_ctx.verify_certificate()
+        except:
+            return True
+
+        return False
 
     def __TypeOfPublicKey(self, public_key) -> ec.EllipticCurvePublicKey:
 
