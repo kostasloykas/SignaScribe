@@ -17,12 +17,10 @@ class Certificate_Chain:
     intermediate = None
     certificate = None
     certificates = []
-
-    # FIXME: SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
     SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
 
     def __init__(self, arguments: Arguments) -> None:
-        self.data = arguments.certificate.read()
+        self.data = arguments.certificate_chain.read()
 
         # take root,intermidiate and owner certificates from file
         self.certificates = self.__DistinguishCertificates(self.data)
@@ -32,15 +30,18 @@ class Certificate_Chain:
             self.certificates)
         self.root = self.__TakeRootCertificate(self.certificates)
 
+        # TODO: load trusted CA's
+
         if self.__CertificateChainIsNotValid(self.certificate, self.intermediate, self.root):
             ERROR("Certificate chain validation failed")
 
         if not self.__ValidAtThisTime():
             ERROR("The certificate isn't valid")
 
-        # # Take the type of public key from certificate
-        # self.public_key = self.certificate.public_key()
-        # self.type_of_public_key = self.__TypeOfPublicKey(self.public_key)
+        # Take the type of public key from certificate
+        self.public_key = self.certificate.get_pubkey()
+        self.type_of_public_key = self.public_key.type()
+        # TODO: public key type must be in supoorted algorithms
 
         # if not self.type_of_public_key in self.SUPPORTED_PUBLIC_KEY_ALGORITHMS:
         #     ERROR("Type of public key doesn't supported")
@@ -94,14 +95,6 @@ class Certificate_Chain:
             return True
 
         return False
-
-    def __TypeOfPublicKey(self, public_key) -> ec.EllipticCurvePublicKey:
-
-        for type in self.SUPPORTED_PUBLIC_KEY_ALGORITHMS:
-            if isinstance(public_key, type):
-                return type
-
-        return None
 
     def __TakeOwnerCertificate(self, certificates) -> crypto.X509:
         return crypto.load_certificate(

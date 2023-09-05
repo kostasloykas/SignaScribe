@@ -14,7 +14,7 @@ class Arguments:
     hash_type = None
     owner_id = None
     public_key = None
-    certificate = None
+    certificate_chain = None
     sign_algorithm = None
 
     SUPPORTED_EXTENTIONS = ["hex", "bin", "zip"]
@@ -30,8 +30,8 @@ class Arguments:
                                  type=str, required=True, help="Owner ID")
         self.parser.add_argument('-f', '--firmware', type=argparse.FileType("rb"), required=True,
                                  help="The firmware that will be signed. Accepts only hex,bin and zip files.")
-        self.parser.add_argument('-c', '--certificate', type=argparse.FileType("rb"), required=True,
-                                 help="The certificate of owner")
+        self.parser.add_argument('-c', '--certificate_chain', type=argparse.FileType("rb"), required=True,
+                                 help="The certificate chain in .crt format")
         self.parser.add_argument('-ht', '--hash_type', type=str, choices=["sha256"], required=True,
                                  help="The hash algorithm that will be used")
         self.parser.add_argument(
@@ -85,7 +85,7 @@ class Arguments:
             self.hash_type = arguments.hash_type
 
             # certificate
-            self.certificate = arguments.certificate
+            self.certificate_chain = arguments.certificate_chain
 
         except Exception as ex:
             ERROR(ex)
@@ -96,7 +96,7 @@ class Arguments:
                 self.product_id and
                 self.timestamp and
                 self.hash_type and
-                self.certificate and
+                self.certificate_chain and
                 self.public_key and
                 self.owner_id and
                 self.sign_algorithm and
