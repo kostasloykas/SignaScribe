@@ -10,7 +10,7 @@ class Arguments:
     vendor_id = None
     product_id = None
     timestamp = None
-    hash_type = None
+    hash_algorithm = None
     certificate_chain = None
     sign_algorithm = None
 
@@ -20,13 +20,13 @@ class Arguments:
 
         # define manifest fields
         self.parser.add_argument('-m', '--manifest_version',
-                                 type=int, required=True, help="Manifest version")
+                                 type=int, choices=[0], required=True, help="Manifest version")
         self.parser.add_argument('-f', '--firmware', type=argparse.FileType("rb"), required=True,
                                  help="The firmware that will be signed. Accepts only hex,bin and zip files.")
         self.parser.add_argument('-c', '--certificate_chain', type=argparse.FileType("rb"), required=True,
                                  help="The certificate chain in .crt format")
-        self.parser.add_argument('-ht', '--hash_type', type=str, choices=["sha256"], required=True,
-                                 help="The hash algorithm that will be used")
+        self.parser.add_argument('-ha', '--hash_algorithm', type=str, choices=["sha256"], required=True,
+                                 help="The hash algorithm will be used")
         self.parser.add_argument(
             '-pi', '--product_id', type=str, required=True, help="The device's product id in hex format")
         self.parser.add_argument(
@@ -62,8 +62,8 @@ class Arguments:
             # sign algorithm
             self.sign_algorithm = arguments.sign_algorithm
 
-            # hash type
-            self.hash_type = arguments.hash_type
+            # hash algorithm
+            self.hash_algorithm = arguments.hash_algorithm
 
             # certificate
             self.certificate_chain = arguments.certificate_chain
@@ -76,10 +76,10 @@ class Arguments:
                 self.vendor_id and
                 self.product_id and
                 self.timestamp and
-                self.hash_type and
+                self.hash_algorithm and
                 self.certificate_chain and
                 self.sign_algorithm)
         return
 
     def __str__(self) -> str:
-        return f"Argument object: manifest id={self.manifest_version} , vendor id={self.vendor_id} , product id={self.product_id} , timestamp={self.timestamp}  , hash type={self.hash_type} "
+        return f"Argument object: manifest id={self.manifest_version} , vendor id={self.vendor_id} , product id={self.product_id} , timestamp={self.timestamp}  , hash type={self.hash_algorithm} "

@@ -12,7 +12,7 @@ def main():
     # Take Parameters and check the validity
     arg = Arguments()
     arg.ParseArguments()
-    print("Argument Parsed Successfuly")
+    print("Arguments Parsed Successfully")
 
     # Load owner's certificate and
     # validate the certificate chain
@@ -21,17 +21,23 @@ def main():
 
     # parse the firmware
     firmware = Firmware(arg)
+    print("Firmware Loaded Successfully")
 
     # create json file
-    json_file = JSON(arg, firmware)
+    json_file = JSON(arg, firmware, certificate_chain.owner_certificate)
+    print("JSON Configured")
+    DEBUG(json_file)
+    return
+
+    # TODO: make a signature file (needs json , firmware , certificate chain)
+    signature = Signature(arg.sign_algorithm, arg.hash_algorithm,
+                          firmware, json_file, certificate_chain)
+    print("Signature Created")
 
     return
-    # TODO: make a signature file and write the signature (needs json , firmware , certificate chain)
-    signature = Signature()
 
     # save all files to the predefined folder
     saver = Saver(firmware, json_file, certificate_chain, signature)
-    saver.SaveAllFiles()
 
     # TODO: create zip file and insert the above files
     # zip = Zip(firmware, signature, certificate, json_file)
