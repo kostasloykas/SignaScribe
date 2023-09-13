@@ -13,7 +13,6 @@ class Arguments:
     timestamp = None
     hash_type = None
     owner_id = None
-    public_key = None
     certificate_chain = None
     sign_algorithm = None
 
@@ -38,8 +37,6 @@ class Arguments:
             '-pi', '--product_id', type=str, required=True, help="The device's product id in hex format")
         self.parser.add_argument(
             '-vi', '--vendor_id', type=str, required=True, help="The device's vendor id in hex format")
-        self.parser.add_argument('-p', '--public_key', type=argparse.FileType("rb"), required=True,
-                                 help="Public key file in pem format")
         self.parser.add_argument('-sa', '--sign_algorithm',
                                  type=str, required=True, choices=["eddsa"], help="Choose which digital sign algorithm you want to use")
 
@@ -55,9 +52,6 @@ class Arguments:
 
             # timestamp
             self.timestamp = str(datetime.now())
-
-            # public key
-            self.public_key = arguments.public_key.read()
 
             # owner id
             self.owner_id = arguments.owner_id
@@ -97,7 +91,6 @@ class Arguments:
                 self.timestamp and
                 self.hash_type and
                 self.certificate_chain and
-                self.public_key and
                 self.owner_id and
                 self.sign_algorithm and
                 self.firmware_type)

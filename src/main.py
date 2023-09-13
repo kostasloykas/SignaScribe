@@ -12,8 +12,9 @@ def main():
     arg = Arguments()
     arg.ParseArguments()
 
-    # Load owner's certificate
-    certificate = Certificate_Chain(arg)
+    # Load owner's certificate and
+    # validate the certificate chain
+    certificate_chain = Certificate_Chain(arg)
 
     return
 

@@ -18,7 +18,6 @@ class Certificate_Chain:
     intermediate = None
     certificate = None
     certificates = []
-    SUPPORTED_PUBLIC_KEY_ALGORITHMS = [ec.EllipticCurvePublicKey]
 
     def __init__(self, arguments: Arguments) -> None:
         self.data = arguments.certificate_chain.read()
@@ -40,18 +39,6 @@ class Certificate_Chain:
         # Take the type of public key from certificate
         self.public_key = self.certificate.get_pubkey()
         self.type_of_public_key = self.public_key.type()
-
-        # TODO: public key type must be in supoorted algorithms
-        # if not self.type_of_public_key in self.SUPPORTED_PUBLIC_KEY_ALGORITHMS:
-        #     ERROR("Type of public key doesn't supported")
-
-        # check if public key its the same with certificate
-        if not self.__ContainsThePublicKey(arguments.public_key):
-            ERROR("Public key is not the same with certificate's public key")
-
-        # # check if the certificate contains owner's id
-        # if not self.__ContainsOwnerID(arguments.owner_id):
-        #     ERROR("The certificate doesn't contains owner's id")
 
         assert self.certificates and self.data and self.certificate and self.intermediate and self.root
 
@@ -107,6 +94,7 @@ class Certificate_Chain:
         # Create a list to store X509 certificate objects
         all_certificates = self.__DistinguishCertificates(ca_bundle)
         all_certificates.pop(len(all_certificates)-1)
+        DEBUG(len(all_certificates))
 
         # Parse and load each certificate in the bundle
         for cert in all_certificates:
@@ -132,27 +120,6 @@ class Certificate_Chain:
     def __TakeRootCertificate(self, certificates) -> crypto.X509:
         return crypto.load_certificate(
             crypto.FILETYPE_PEM, certificates[2])
-
-    def __ContainsOwnerID(self, owner_id) -> bool:
-        common_name = self.certificate.subject.get_attributes_for_oid(
-            NameOID.COMMON_NAME)[0].value
-
-        if common_name != owner_id:
-            return False
-
-        return True
-
-    def __ContainsThePublicKey(self, argument_public_key) -> bool:
-        assert self.public_key != None and argument_public_key != None
-
-        # convert certificate's public key into bytes
-        bytes_public_key = self.public_key.public_bytes(encoding=serialization.Encoding.PEM,
-                                                        format=serialization.PublicFormat.SubjectPublicKeyInfo)
-
-        if (bytes_public_key != argument_public_key):
-            return False
-
-        return True
 
     def __ValidAtThisTime(self) -> bool:
         date_format = "%Y%m%d%H%M%SZ"  # SSL certificate date format (UTC)
