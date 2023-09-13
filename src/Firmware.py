@@ -6,16 +6,26 @@ class Firmware:
     data = None
     size = None
     type = None
-    path = None
+
+    SUPPORTED_EXTENTIONS = ["hex", "bin", "zip"]
 
     def __init__(self, arguments: Arguments) -> None:
-        assert arguments.firmware and arguments.firmware_type
+        assert arguments.firmware
 
         self.data = arguments.firmware.read()
         self.size = len(self.data)
-        self.type = arguments.firmware_type
-        self.path = arguments.firmware.name
+        # firmware type
+        self.type = self.__TakeFirmwareExtention(
+            arguments.firmware.name)
 
-        assert self.data and self.size and self.type and self.path
+        assert self.data and self.size and self.type
+
+    def __TakeFirmwareExtention(self, firmware_name: str) -> str:
+        extention = firmware_name.split(".").pop()
+
+        if not extention in self.SUPPORTED_EXTENTIONS:
+            ERROR("Not supported extention of firmware file",
+                  "SUPPORTED EXTENTIONS --->", self.SUPPORTED_EXTENTIONS)
+        return extention
 
     pass

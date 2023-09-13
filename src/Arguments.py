@@ -6,7 +6,6 @@ from Utility_Functions import *
 class Arguments:
 
     firmware = None
-    firmware_type = None
     manifest_version = None
     vendor_id = None
     product_id = None
@@ -14,8 +13,6 @@ class Arguments:
     hash_type = None
     certificate_chain = None
     sign_algorithm = None
-
-    SUPPORTED_EXTENTIONS = ["hex", "bin", "zip"]
 
     def ParseArguments(self) -> None:
 
@@ -62,10 +59,6 @@ class Arguments:
             # read file
             self.firmware = arguments.firmware
 
-            # firmware type
-            self.firmware_type = self.__TakeFirmwareExtention(
-                arguments.firmware.name)
-
             # sign algorithm
             self.sign_algorithm = arguments.sign_algorithm
 
@@ -85,17 +78,8 @@ class Arguments:
                 self.timestamp and
                 self.hash_type and
                 self.certificate_chain and
-                self.sign_algorithm and
-                self.firmware_type)
+                self.sign_algorithm)
         return
-
-    def __TakeFirmwareExtention(self, firmware_name: str) -> str:
-        extention = firmware_name.split(".").pop()
-
-        if not extention in self.SUPPORTED_EXTENTIONS:
-            ERROR("Not supported extention of firmware file",
-                  "SUPPORTED EXTENTIONS --->", self.SUPPORTED_EXTENTIONS)
-        return extention
 
     def __str__(self) -> str:
         return f"Argument object: manifest id={self.manifest_version} , vendor id={self.vendor_id} , product id={self.product_id} , timestamp={self.timestamp}  , hash type={self.hash_type} "

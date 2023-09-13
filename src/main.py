@@ -11,7 +11,7 @@ def main():
     # Take Parameters and check the validity
     arg = Arguments()
     arg.ParseArguments()
-    print("Argument Parsed")
+    print("Argument Parsed Successfuly")
 
     # Load owner's certificate and
     # validate the certificate chain
