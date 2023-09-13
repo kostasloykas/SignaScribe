@@ -7,12 +7,11 @@ class Arguments:
 
     firmware = None
     firmware_type = None
-    manifest_id = None
+    manifest_version = None
     vendor_id = None
     product_id = None
     timestamp = None
     hash_type = None
-    owner_id = None
     certificate_chain = None
     sign_algorithm = None
 
@@ -23,10 +22,8 @@ class Arguments:
         self.parser = argparse.ArgumentParser(prog='SignaScribe')
 
         # define manifest fields
-        self.parser.add_argument('-mi', '--manifest_id',
-                                 type=int, required=True, help="Manifest ID")
-        self.parser.add_argument('-oi', '--owner_id',
-                                 type=str, required=True, help="Owner ID")
+        self.parser.add_argument('-m', '--manifest_version',
+                                 type=int, required=True, help="Manifest version")
         self.parser.add_argument('-f', '--firmware', type=argparse.FileType("rb"), required=True,
                                  help="The firmware that will be signed. Accepts only hex,bin and zip files.")
         self.parser.add_argument('-c', '--certificate_chain', type=argparse.FileType("rb"), required=True,
@@ -53,17 +50,14 @@ class Arguments:
             # timestamp
             self.timestamp = str(datetime.now())
 
-            # owner id
-            self.owner_id = arguments.owner_id
-
             # product id
             self.product_id = int(arguments.product_id, 16)
 
             # vendor id
             self.vendor_id = int(arguments.vendor_id, 16)
 
-            # manifest id
-            self.manifest_id = arguments.manifest_id
+            # manifest version
+            self.manifest_version = arguments.manifest_version
 
             # read file
             self.firmware = arguments.firmware
@@ -85,13 +79,12 @@ class Arguments:
             ERROR(ex)
 
         assert (self.firmware and
-                self.manifest_id != None and
+                self.manifest_version != None and
                 self.vendor_id and
                 self.product_id and
                 self.timestamp and
                 self.hash_type and
                 self.certificate_chain and
-                self.owner_id and
                 self.sign_algorithm and
                 self.firmware_type)
         return
@@ -105,4 +98,4 @@ class Arguments:
         return extention
 
     def __str__(self) -> str:
-        return f"Argument object: manifest id={self.manifest_id} , vendor id={self.vendor_id} , product id={self.product_id} , timestamp={self.timestamp}  , hash type={self.hash_type} "
+        return f"Argument object: manifest id={self.manifest_version} , vendor id={self.vendor_id} , product id={self.product_id} , timestamp={self.timestamp}  , hash type={self.hash_type} "

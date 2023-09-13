@@ -18,11 +18,10 @@ def main():
     certificate_chain = Certificate_Chain(arg)
     print("Certificate Chain Validation Passed")
 
-    return
-
     # parse the firmware
     firmware = Firmware(arg)
 
+    return
     # create json file
     json_file = JSON(arg, firmware)
     json_file.SaveFile()

@@ -1,5 +1,5 @@
 run:
-	@python3 ./src/main.py -mi 0 -oi kostas.com -sa eddsa -pi 0x2389 -vi 0x2344 -ht sha256 \
+	@python3 ./src/main.py -m 0 -sa eddsa -pi 0x2389 -vi 0x2344 -ht sha256 \
 	-f ./src/files/firmware.hex -c ./src/files/www.example.org.chained+root.crt 
 
 

@@ -28,7 +28,7 @@ class JSON:
 
     def __str__(self) -> str:
         return json.dumps(
-            {"manifest_id": self.arguments.manifest_id, "vendor_id": self.arguments.vendor_id,
+            {"manifest_id": self.arguments.manifest_version, "vendor_id": self.arguments.vendor_id,
              "product_id": self.arguments.product_id, "timestamp": self.arguments.timestamp,
              "hash_type": self.arguments.hash_type, "owner_id": self.arguments.owner_id,
              "sign_algorithm": self.arguments.sign_algorithm, "firmware_size": self.firmware.size,
