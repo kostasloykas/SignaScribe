@@ -14,7 +14,6 @@ class Firmware:
 
         self.data = arguments.firmware.read()
         self.size = len(self.data)
-        # firmware type
         self.type = self.__TakeFirmwareExtention(
             arguments.firmware.name)
 
