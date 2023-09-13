@@ -26,6 +26,7 @@ class JSON:
         return
 
     def __str__(self) -> str:
+        # FIXME: common name
         return json.dumps(
             {"manifest_version": self.arguments.manifest_version, "common_name": self.arguments.vendor_id,
              "vendor_id": self.arguments.vendor_id,
