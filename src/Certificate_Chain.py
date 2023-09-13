@@ -16,45 +16,50 @@ class Certificate_Chain:
     public_key = None
     root = None
     intermediate = None
-    certificate = None
+    owner_certificate = None
     certificates = []
 
     def __init__(self, arguments: Arguments) -> None:
         self.data = arguments.certificate_chain.read()
 
-        # take root,intermidiate and owner certificates from file
+        # all the certificates
         self.certificates = self.__DistinguishCertificates(self.data)
 
-        self.certificate = self.__TakeOwnerCertificate(self.certificates)
+        # take owner certificate
+        self.owner_certificate = self.__TakeOwnerCertificate(self.certificates)
+
+        # take intermmediate certificates
         self.intermediate = self.__TakeIntermediateCertificate(
             self.certificates)
+
+        # take root certificate
         self.root = self.__TakeRootCertificate(self.certificates)
 
-        if self.__CertificateChainIsNotValid(self.certificate, self.intermediate, self.root):
+        if self.__CertificateChainIsNotValid(self.owner_certificate, self.intermediate, self.root):
             ERROR("Certificate chain validation failed")
 
         if not self.__ValidAtThisTime():
             ERROR("The certificate isn't valid")
 
         # Take the type of public key from certificate
-        self.public_key = self.certificate.get_pubkey()
+        self.public_key = self.owner_certificate.get_pubkey()
         self.type_of_public_key = self.public_key.type()
 
-        assert self.certificates and self.data and self.certificate and self.intermediate and self.root
+        assert self.certificates and self.data and self.owner_certificate and self.intermediate and self.root
 
     def __DistinguishCertificates(self, data) -> []:
         certificates = []
 
         for cert in data.split(b'-----END CERTIFICATE-----\n'):
             # Re-add the "-----END CERTIFICATE-----" line
-            if (not b'-----END CERTIFICATE-----' in cert):
+            if (b'-----BEGIN CERTIFICATE-----' in cert and not b'-----END CERTIFICATE-----' in cert):
                 cert += b'-----END CERTIFICATE-----\n'
+                certificates.append(cert)
 
-            certificates.append(cert)
         return certificates
 
-    def __CertificateChainIsNotValid(self, certificate, intermediate, root: crypto.X509) -> bool:
-        assert certificate and intermediate and root
+    def __CertificateChainIsNotValid(self, owner_certificate, intermediate, root: crypto.X509) -> bool:
+        assert owner_certificate and intermediate and root
 
         # load trusted certificates and add them to x509 store
         store = crypto.X509Store()
@@ -74,7 +79,7 @@ class Certificate_Chain:
         # add intermidiate certificate as trusted
         store.add_cert(intermediate)
         store_ctx = crypto.X509StoreContext(
-            store, certificate)
+            store, owner_certificate)
 
         # verify owner certificate
         try:
@@ -94,7 +99,6 @@ class Certificate_Chain:
         # Create a list to store X509 certificate objects
         all_certificates = self.__DistinguishCertificates(ca_bundle)
         all_certificates.pop(len(all_certificates)-1)
-        DEBUG(len(all_certificates))
 
         # Parse and load each certificate in the bundle
         for cert in all_certificates:
@@ -118,15 +122,16 @@ class Certificate_Chain:
             crypto.FILETYPE_PEM, certificates[1])
 
     def __TakeRootCertificate(self, certificates) -> crypto.X509:
+        DEBUG(len(certificates))
         return crypto.load_certificate(
-            crypto.FILETYPE_PEM, certificates[2])
+            crypto.FILETYPE_PEM, certificates[len(certificates)-1])
 
     def __ValidAtThisTime(self) -> bool:
         date_format = "%Y%m%d%H%M%SZ"  # SSL certificate date format (UTC)
         not_valid_after = datetime.strptime(
-            self.certificate.get_notAfter().decode('utf-8'), date_format)
+            self.owner_certificate.get_notAfter().decode('utf-8'), date_format)
         not_valid_before = datetime.strptime(
-            self.certificate.get_notBefore().decode('utf-8'), date_format)
+            self.owner_certificate.get_notBefore().decode('utf-8'), date_format)
 
         if datetime.now() > not_valid_after or datetime.now() < not_valid_before:
             return False  # the certificate isn't in valid timestamp
