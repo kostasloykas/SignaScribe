@@ -4,6 +4,7 @@ from Certificate_Chain import Certificate_Chain
 from JSON import *
 from Zip import *
 from Signature import *
+from Saver import Saver
 
 
 def main():
@@ -21,17 +22,18 @@ def main():
     # parse the firmware
     firmware = Firmware(arg)
 
-    return
     # create json file
     json_file = JSON(arg, firmware)
-    json_file.SaveFile()
 
-    # TODO: make a signature file and write the signature
-    # signature = Signature()
-    # signature.SaveFile()
+    return
+    # TODO: make a signature file and write the signature (needs json , firmware , certificate chain)
+    signature = Signature()
 
-    # TODO: create zip file and save inside firmware,
-    # # json file , certificate and signature
+    # save all files to the predefined folder
+    saver = Saver(firmware, json_file, certificate_chain, signature)
+    saver.SaveAllFiles()
+
+    # TODO: create zip file and insert the above files
     # zip = Zip(firmware, signature, certificate, json_file)
     # zip.SaveFile()
 

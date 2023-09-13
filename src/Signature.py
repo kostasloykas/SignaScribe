@@ -2,8 +2,12 @@ class Signature:
     def __init__(self) -> None:
         pass
 
-    # TODO: SaveFile
-    def SaveFile() -> None:
+    def SaveFile(self, path) -> None:
+        f = open(path, "w")
+        f.write(self.__str__())
+        f.close()
+
+        print("Signature file saved")
         return
 
     pass
