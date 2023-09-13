@@ -4,18 +4,16 @@ from cryptography.x509.oid import AttributeOID, NameOID
 from cryptography.hazmat.primitives import serialization
 from datetime import datetime
 from Arguments import *
-from cryptography.hazmat.backends import default_backend
 from OpenSSL import crypto
 import certifi
+from typing import List
 
 
 class Certificate_Chain:
 
     data = None
-    type_of_public_key = None
-    public_key = None
     root = None
-    intermediate = None
+    intermediate_certificates = None
     owner_certificate = None
     certificates = []
 
@@ -25,17 +23,23 @@ class Certificate_Chain:
         # all the certificates
         self.certificates = self.__DistinguishCertificates(self.data)
 
+        #
+        if len(self.certificates) < 2:
+            ERROR("Certificate file must have at least 2 certificates")
+
         # take owner certificate
         self.owner_certificate = self.__TakeOwnerCertificate(self.certificates)
 
-        # take intermmediate certificates
-        self.intermediate = self.__TakeIntermediateCertificate(
-            self.certificates)
+        # If chain has intermediate certificate extract them
+        if len(self.certificates) > 2:
+            # take intermmediate certificates
+            self.intermediate_certificates = self.__TakeIntermediateCertificates(
+                self.certificates)
 
         # take root certificate
         self.root = self.__TakeRootCertificate(self.certificates)
 
-        if self.__CertificateChainIsNotValid(self.owner_certificate, self.intermediate, self.root):
+        if self.__CertificateChainIsNotValid(self.owner_certificate, self.intermediate_certificates, self.root):
             ERROR("Certificate chain validation failed")
 
         if not self.__ValidAtThisTime():
@@ -45,7 +49,7 @@ class Certificate_Chain:
         self.public_key = self.owner_certificate.get_pubkey()
         self.type_of_public_key = self.public_key.type()
 
-        assert self.certificates and self.data and self.owner_certificate and self.intermediate and self.root
+        assert self.certificates and self.data and self.owner_certificate and self.intermediate_certificates and self.root
 
     def __DistinguishCertificates(self, data) -> []:
         certificates = []
@@ -58,33 +62,37 @@ class Certificate_Chain:
 
         return certificates
 
-    def __CertificateChainIsNotValid(self, owner_certificate, intermediate, root: crypto.X509) -> bool:
-        assert owner_certificate and intermediate and root
+    def __CertificateChainIsNotValid(self, owner_certificate: crypto.X509, intermediate_certificates: List[crypto.X509], root: crypto.X509) -> bool:
+        assert owner_certificate and intermediate_certificates and root
 
         # load trusted certificates and add them to x509 store
         store = crypto.X509Store()
         for trusted_cert in self.__LoadTrustedCertificates(certifi.where()):
             store.add_cert(trusted_cert)
 
-        # Check the indermidiate chain certificates before adding it to the store
-        store_ctx = crypto.X509StoreContext(
-            store, intermediate)
+        # Check the indermediate chain certificates before adding it to the store
+        intermediate_certificates.reverse()
 
-        # verify intermidiate certificate
-        try:
-            store_ctx.verify_certificate()
-        except:
-            return True
+        for cert in intermediate_certificates:
+            store_ctx = crypto.X509StoreContext(
+                store, cert)
 
-        # add intermidiate certificate as trusted
-        store.add_cert(intermediate)
+            # verify chain
+            try:
+                store_ctx.verify_certificate()
+                store.add_cert(cert)
+            except:
+                print("ERROR: Couldn't verify intermediate certificate chain")
+                return True
+
+        # verify owner certificate
         store_ctx = crypto.X509StoreContext(
             store, owner_certificate)
 
-        # verify owner certificate
         try:
             store_ctx.verify_certificate()
         except:
+            print("ERROR: Verify owner certificate")
             return True
 
         return False
@@ -109,7 +117,7 @@ class Certificate_Chain:
                 trusted_certificates.append(x509_cert)
             except:
                 # Handle any errors in certificate loading
-                print(f"Error loading certificate: {e}")
+                print(f"Error loading trusted certificate")
 
         return trusted_certificates
 
@@ -117,12 +125,18 @@ class Certificate_Chain:
         return crypto.load_certificate(
             crypto.FILETYPE_PEM, certificates[0])
 
-    def __TakeIntermediateCertificate(self, certificates) -> crypto.X509:
-        return crypto.load_certificate(
-            crypto.FILETYPE_PEM, certificates[1])
+    def __TakeIntermediateCertificates(self, certificates) -> List[crypto.X509]:
+        intermediate_certificates = []
+
+        # load intermmediate certificates and add them to the list
+        for cert in certificates[1:len(certificates)-1]:
+            intermediate_certificates.append(
+                crypto.load_certificate(crypto.FILETYPE_PEM, cert))
+
+        assert len(intermediate_certificates) != 0
+        return intermediate_certificates
 
     def __TakeRootCertificate(self, certificates) -> crypto.X509:
-        DEBUG(len(certificates))
         return crypto.load_certificate(
             crypto.FILETYPE_PEM, certificates[len(certificates)-1])
 
