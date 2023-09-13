@@ -14,12 +14,14 @@ def main():
     arg.ParseArguments()
     print("Arguments Parsed Successfully")
 
+    # TODO: create private key and public (depends on sign algorithm)
+
     # Load owner's certificate and
     # validate the certificate chain
     certificate_chain = Certificate_Chain(arg)
     print("Certificate Chain Validation Passed")
 
-    # parse the firmware
+    # load firmware
     firmware = Firmware(arg)
     print("Firmware Loaded Successfully")
 
@@ -27,6 +29,7 @@ def main():
     json_file = JSON(arg, firmware, certificate_chain.owner_certificate)
     print("JSON Configured")
     DEBUG(json_file)
+
     return
 
     # TODO: make a signature file (needs json , firmware , certificate chain)

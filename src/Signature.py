@@ -4,9 +4,17 @@ from cryptography.hazmat.primitives import hashes
 
 
 class Signature:
+    private_key = None
+    sign_algorithm = None
+    hash_algorithm = None
+    firmware = None
+    json = None
+    certificate_chain = None
+
     def __init__(self, sign_algorithm, hash_algorithm, firmware: Firmware, json, certificate_chain: Certificate_Chain) -> None:
         # FIXME: calculate hash
         # FIXME: Create Signature
+        # FIXME: assertion
         pass
 
     def CalculateHash(self, hash_algorithm):
