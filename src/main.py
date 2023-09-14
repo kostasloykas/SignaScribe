@@ -22,11 +22,12 @@ def PrivateKey(sign_algorithm) -> SUPPORTED_PRIVATE_KEYS:
     return private_key
 
 
+# FIXME: Make it support md5 algorithm
 def TakeHashAlgorithm(hash_algorithm) -> SUPPORTED_HASH_ALGORITHMS:
     hash = None
 
     hashes = {"sha256": SHA256(),
-              "MD5": MD5()}
+              "md5": MD5()}
     hash = hashes.get(hash_algorithm)
 
     assert hash
@@ -58,16 +59,15 @@ def main():
         arg, firmware, certificate_chain.owner_certificate, private_key.public_key())
     print("JSON Configured")
 
-    # TODO: Create the signature file
+    # Sign the files
     signature = Signature(arg.sign_algorithm, TakeHashAlgorithm(arg.hash_algorithm), private_key,
                           firmware, json_file, certificate_chain)
-    print("Signature Created Successfully")
-    return
-
-    return
+    print("Process of signing completed sucessfully")
 
     # save all files to the predefined folder
     saver = Saver(firmware, json_file, certificate_chain, signature)
+
+    return
 
     # TODO: create zip file and insert the above files
     # zip = Zip(firmware, signature, certificate, json_file)
