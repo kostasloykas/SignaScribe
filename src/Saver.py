@@ -1,20 +1,49 @@
 from Firmware import Firmware
 from Certificate_Chain import Certificate_Chain
 from Signature import Signature
-from Zip import Zip
+from JSON import JSON
+import zipfile
 import os
 
 
 class Saver:
 
-    folder_name = "TilergatisFiles"
+    firmware = None
+    certificate_chain = None
+    signature = None
+    json = None
 
-    def __init__(self, firmware: Firmware, json, certificate_chain: Certificate_Chain, signature: Signature, zip) -> None:
-        pass
+    def __init__(self, firmware: Firmware, json: JSON, certificate_chain: Certificate_Chain, signature: Signature) -> None:
+        self.firmware = firmware
+        self.certificate_chain = certificate_chain
+        self.signature = signature
+        self.json = json
 
-    def SaveAllFilesIntoZip(self, zip: Zip):
-        self.path = os.getcwd()
+        assert (self.firmware
+                and self.certificate_chain
+                and self.signature
+                and self.json)
 
-        # delete all unneccecery files
+    def SaveAllFilesIntoZip(self, zip_name):
+
+        # if folder doesn't exists then create one
+        if not os.path.exists("build"):
+            os.makedirs("build")
+
+        with zipfile.ZipFile('build/' + zip_name, 'w') as my_zip:
+            # json
+            my_zip.writestr('info.json', self.json.__str__())
+
+            # firmware
+            my_zip.writestr('firmware.' + self.firmware.type,
+                            self.firmware.data)
+
+            # certificate chain
+            my_zip.writestr('certificate_chain.pem',
+                            self.certificate_chain.data)
+
+            # signature
+            my_zip.writestr('signature.dat', self.signature.data)
+
         return
     pass

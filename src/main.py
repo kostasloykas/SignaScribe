@@ -2,7 +2,6 @@ from Arguments import *
 from Firmware import *
 from Certificate_Chain import Certificate_Chain
 from JSON import *
-from Zip import *
 from Signature import *
 from Saver import Saver
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
@@ -65,13 +64,11 @@ def main():
     print("Process of signing completed sucessfully")
 
     # save all files to the predefined folder
+
     saver = Saver(firmware, json_file, certificate_chain, signature)
+    saver.SaveAllFilesIntoZip("Tilergatis.zip")
 
     return
-
-    # TODO: create zip file and insert the above files
-    # zip = Zip(firmware, signature, certificate, json_file)
-    # zip.SaveFile()
 
 
 if __name__ == "__main__":
