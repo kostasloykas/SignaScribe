@@ -7,9 +7,11 @@ from Signature import *
 from Saver import Saver
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.asymmetric.ed448 import Ed448PrivateKey
+from Signature import SUPPORTED_PRIVATE_KEYS, SUPPORTED_HASH_ALGORITHMS
+from cryptography.hazmat.primitives.hashes import MD5, SHA256, SHAKE256
 
 
-def PrivateKey(sign_algorithm) -> Ed25519PrivateKey | Ed448PrivateKey:
+def PrivateKey(sign_algorithm) -> SUPPORTED_PRIVATE_KEYS:
     private_key = None
 
     keys = {"eddsa25519":  Ed25519PrivateKey.generate(),
@@ -20,6 +22,17 @@ def PrivateKey(sign_algorithm) -> Ed25519PrivateKey | Ed448PrivateKey:
     return private_key
 
 
+def TakeHashAlgorithm(hash_algorithm) -> SUPPORTED_HASH_ALGORITHMS:
+    hash = None
+
+    hashes = {"sha256": SHA256(),
+              "MD5": MD5()}
+    hash = hashes.get(hash_algorithm)
+
+    assert hash
+    return hash
+
+
 def main():
 
     # Take Parameters and check the validity
@@ -27,29 +40,28 @@ def main():
     arg.ParseArguments()
     print("Arguments Parsed Successfully")
 
+    # Load firmware
+    firmware = Firmware(arg)
+    print("Firmware Loaded Successfully")
     # Load owner's certificate and
+
     # validate the certificate chain
     certificate_chain = Certificate_Chain(arg)
     print("Certificate Chain Validation Passed")
 
-    # load firmware
-    firmware = Firmware(arg)
-    print("Firmware Loaded Successfully")
-
-    # TODO: Take private key (depends on sign algorithm)
+    # Generate a private key according to sign algorithm
     private_key = PrivateKey(arg.sign_algorithm)
     print("Private Key Generated Successfully")
 
-    # create json file
+    # Create json file
     json_file = JSON(
         arg, firmware, certificate_chain.owner_certificate, private_key.public_key())
     print("JSON Configured")
-    DEBUG(json_file)
 
-    # TODO: make a signature file (needs json , firmware , certificate chain)
-    signature = Signature(arg.sign_algorithm, arg.hash_algorithm, private_key,
+    # TODO: Create the signature file
+    signature = Signature(arg.sign_algorithm, TakeHashAlgorithm(arg.hash_algorithm), private_key,
                           firmware, json_file, certificate_chain)
-    # print("Signature Created")
+    print("Signature Created Successfully")
     return
 
     return
