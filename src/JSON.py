@@ -6,6 +6,9 @@ from Utility_Functions import *
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from cryptography.hazmat.primitives.asymmetric.ed448 import Ed448PublicKey
 from cryptography.hazmat.primitives import serialization
+from typing import Union
+
+SUPPORTED_PUBLIC_KEYS = Union[Ed25519PublicKey, Ed448PublicKey]
 
 
 class JSON:
@@ -14,7 +17,7 @@ class JSON:
     owner_certificate = None
     public_key = None
 
-    def __init__(self, arguments: Arguments, firmware: Firmware, owner_certificate: crypto.X509, public_key: Ed25519PublicKey | Ed448PublicKey) -> None:
+    def __init__(self, arguments: Arguments, firmware: Firmware, owner_certificate: crypto.X509, public_key: SUPPORTED_PUBLIC_KEYS) -> None:
         self.arguments = arguments
         self.firmware = firmware
         self.owner_certificate = owner_certificate

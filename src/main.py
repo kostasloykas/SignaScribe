@@ -46,12 +46,11 @@ def main():
     print("JSON Configured")
     DEBUG(json_file)
 
-    return
-
     # TODO: make a signature file (needs json , firmware , certificate chain)
-    signature = Signature(arg.sign_algorithm, arg.hash_algorithm,
+    signature = Signature(arg.sign_algorithm, arg.hash_algorithm, private_key,
                           firmware, json_file, certificate_chain)
-    print("Signature Created")
+    # print("Signature Created")
+    return
 
     return
 
