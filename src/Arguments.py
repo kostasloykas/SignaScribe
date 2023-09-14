@@ -32,7 +32,7 @@ class Arguments:
         self.parser.add_argument(
             '-vi', '--vendor_id', type=str, required=True, help="The device's vendor id in hex format")
         self.parser.add_argument('-sa', '--sign_algorithm',
-                                 type=str, required=True, choices=["eddsa"], help="Choose which digital sign algorithm you want to use")
+                                 type=str, required=True, choices=["eddsa448", "eddsa25519"], help="Choose which digital sign algorithm you want to use")
 
         # parse arguments
         arguments = self.parser.parse_args()
