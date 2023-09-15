@@ -23,23 +23,25 @@ class Certificate_Chain:
         # all the certificates
         self.certificates = self.__DistinguishCertificates(self.data)
 
-        #
-        if len(self.certificates) < 2:
-            ERROR("Certificate file must have at least 2 certificates")
+        if len(self.certificates) < 1:
+            ERROR("Certificate file must have at least 1 certificate")
 
         # take owner certificate
         self.owner_certificate = self.__TakeOwnerCertificate(self.certificates)
 
         # If chain has intermediate certificate extract them
-        if len(self.certificates) > 2:
+        if len(self.certificates) >= 3:
             # take intermmediate certificates
             self.intermediate_certificates = self.__TakeIntermediateCertificates(
                 self.certificates)
 
-        # take root certificate
-        self.root = self.__TakeRootCertificate(self.certificates)
+            # # take root certificate
+            # self.root = self.__TakeRootCertificate(self.certificates)
+        # else:
+        #     # take only root certificate
+        #     self.root = self.__TakeRootCertificate(self.certificates)
 
-        if self.__CertificateChainIsNotValid(self.owner_certificate, self.intermediate_certificates, self.root):
+        if self.__CertificateChainIsNotValid(self.owner_certificate, self.intermediate_certificates):
             ERROR("Certificate chain validation failed")
 
         if not self.__ValidAtThisTime():
@@ -49,7 +51,7 @@ class Certificate_Chain:
         self.public_key = self.owner_certificate.get_pubkey()
         self.type_of_public_key = self.public_key.type()
 
-        assert self.certificates and self.data and self.owner_certificate and self.intermediate_certificates and self.root
+        assert self.certificates and self.data and self.owner_certificate and self.intermediate_certificates
 
     def __DistinguishCertificates(self, data) -> []:
         certificates = []
@@ -62,8 +64,8 @@ class Certificate_Chain:
 
         return certificates
 
-    def __CertificateChainIsNotValid(self, owner_certificate: crypto.X509, intermediate_certificates: List[crypto.X509], root: crypto.X509) -> bool:
-        assert owner_certificate and intermediate_certificates and root
+    def __CertificateChainIsNotValid(self, owner_certificate: crypto.X509, intermediate_certificates: List[crypto.X509]) -> bool:
+        assert owner_certificate and intermediate_certificates
 
         # load trusted certificates and add them to x509 store
         store = crypto.X509Store()
