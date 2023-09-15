@@ -7,12 +7,12 @@ from Arguments import *
 from OpenSSL import crypto
 import certifi
 from typing import List
+import os
 
 
 class Certificate_Chain:
 
     data = None
-    root = None
     intermediate_certificates = None
     owner_certificate = None
     certificates = []
@@ -30,17 +30,10 @@ class Certificate_Chain:
         self.owner_certificate = self.__TakeOwnerCertificate(self.certificates)
 
         # If chain has intermediate certificate extract them
-        if len(self.certificates) >= 3:
+        if len(self.certificates) > 1:
             # take intermmediate certificates
             self.intermediate_certificates = self.__TakeIntermediateCertificates(
                 self.certificates)
-
-        # FIXME: remove root certificate
-            # # take root certificate
-            # self.root = self.__TakeRootCertificate(self.certificates)
-        # else:
-        #     # take only root certificate
-        #     self.root = self.__TakeRootCertificate(self.certificates)
 
         if self.__CertificateChainIsNotValid(self.owner_certificate, self.intermediate_certificates):
             ERROR("Certificate chain validation failed")
@@ -52,7 +45,7 @@ class Certificate_Chain:
         self.public_key = self.owner_certificate.get_pubkey()
         self.type_of_public_key = self.public_key.type()
 
-        assert self.certificates and self.data and self.owner_certificate and self.intermediate_certificates
+        assert self.certificates and self.data and self.owner_certificate
 
     def __DistinguishCertificates(self, data) -> []:
         certificates = []
@@ -66,27 +59,39 @@ class Certificate_Chain:
         return certificates
 
     def __CertificateChainIsNotValid(self, owner_certificate: crypto.X509, intermediate_certificates: List[crypto.X509]) -> bool:
-        assert owner_certificate and intermediate_certificates
+        assert owner_certificate
 
         # load trusted certificates and add them to x509 store
         store = crypto.X509Store()
         for trusted_cert in self.__LoadTrustedCertificates(certifi.where()):
             store.add_cert(trusted_cert)
 
-        # Check the indermediate chain certificates before adding it to the store
-        intermediate_certificates.reverse()
+        # FIXME: Load local certificates (like Codegic)
+        codegic = open(os.getcwd() + "/src/files/root2.pem", 'rb').read()
+        codegic2 = open(os.getcwd() + "/src/files/root.pem", 'rb').read()
+        x509_cert = crypto.load_certificate(
+            crypto.FILETYPE_PEM, codegic)
+        store.add_cert(x509_cert)
+        x509_cert = crypto.load_certificate(
+            crypto.FILETYPE_PEM, codegic2)
+        store.add_cert(x509_cert)
 
-        for cert in intermediate_certificates:
-            store_ctx = crypto.X509StoreContext(
-                store, cert)
+        # if there intermmediate certificates
+        if (intermediate_certificates != None):
+            intermediate_certificates.reverse()
 
-            # verify chain
-            try:
-                store_ctx.verify_certificate()
-                store.add_cert(cert)
-            except:
-                print("ERROR: Couldn't verify intermediate certificate chain")
-                return True
+            # Check the indermediate chain certificates before adding it to the store
+            for cert in intermediate_certificates:
+                store_ctx = crypto.X509StoreContext(
+                    store, cert)
+
+                # verify chain
+                try:
+                    store_ctx.verify_certificate()
+                    store.add_cert(cert)
+                except:
+                    print("ERROR: Couldn't verify intermediate certificate chain")
+                    return True
 
         # verify owner certificate
         store_ctx = crypto.X509StoreContext(
@@ -132,16 +137,12 @@ class Certificate_Chain:
         intermediate_certificates = []
 
         # load intermmediate certificates and add them to the list
-        for cert in certificates[1:len(certificates)-1]:
+        for cert in certificates[1:]:
             intermediate_certificates.append(
                 crypto.load_certificate(crypto.FILETYPE_PEM, cert))
 
         assert len(intermediate_certificates) != 0
         return intermediate_certificates
-
-    def __TakeRootCertificate(self, certificates) -> crypto.X509:
-        return crypto.load_certificate(
-            crypto.FILETYPE_PEM, certificates[len(certificates)-1])
 
     def __ValidAtThisTime(self) -> bool:
         date_format = "%Y%m%d%H%M%SZ"  # SSL certificate date format (UTC)
