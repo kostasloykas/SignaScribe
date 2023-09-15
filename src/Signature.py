@@ -61,12 +61,4 @@ class Signature:
 
         return self.private_key.sign(digest)
 
-    def SaveFile(self, path) -> None:
-        f = open(path, "w")
-        f.write(self.__str__())
-        f.close()
-
-        print("Signature file saved")
-        return
-
     pass

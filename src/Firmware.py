@@ -27,12 +27,4 @@ class Firmware:
                   "SUPPORTED EXTENTIONS --->", self.SUPPORTED_EXTENTIONS)
         return extention
 
-    def SaveFile(self, path) -> None:
-        f = open(path, "w")
-        f.write(self.__str__())
-        f.close()
-
-        print("Firmware file saved")
-        return
-
     pass

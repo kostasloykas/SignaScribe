@@ -26,14 +26,6 @@ class JSON:
 
         assert self.arguments and self.firmware and self.owner_certificate and self.public_key
 
-    def SaveFile(self, path) -> None:
-        f = open(path, "w")
-        f.write(self.__str__())
-        f.close()
-
-        print("JSON file saved")
-        return
-
     def __str__(self) -> str:
         return json.dumps(
             {"manifest_version": self.arguments.manifest_version, "common_name": self.owner_certificate.get_subject().CN,

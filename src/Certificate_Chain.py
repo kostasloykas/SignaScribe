@@ -152,12 +152,4 @@ class Certificate_Chain:
 
         return True  # the certificate is in valid timestamp
 
-    def SaveFile(self, path) -> None:
-        f = open(path, "w")
-        f.write(self.__str__())
-        f.close()
-
-        print("Certificate chain file saved")
-        return
-
     pass

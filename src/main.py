@@ -21,7 +21,7 @@ def PrivateKey(sign_algorithm) -> SUPPORTED_PRIVATE_KEYS:
     return private_key
 
 
-# FIXME: Make it support md5 algorithm
+# TODO: Make it support md5 algorithm
 def TakeHashAlgorithm(hash_algorithm) -> SUPPORTED_HASH_ALGORITHMS:
     hash = None
 
