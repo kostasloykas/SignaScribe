@@ -35,6 +35,7 @@ class Certificate_Chain:
             self.intermediate_certificates = self.__TakeIntermediateCertificates(
                 self.certificates)
 
+        # FIXME: remove root certificate
             # # take root certificate
             # self.root = self.__TakeRootCertificate(self.certificates)
         # else:
