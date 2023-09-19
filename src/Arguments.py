@@ -2,6 +2,8 @@ import argparse
 from datetime import datetime
 from Utility_Functions import *
 
+MANIFEST_VERSION = 1
+
 
 class Arguments:
 
@@ -19,8 +21,6 @@ class Arguments:
         self.parser = argparse.ArgumentParser(prog='SignaScribe')
 
         # define manifest fields
-        self.parser.add_argument('-m', '--manifest_version',
-                                 type=int, choices=[0], required=True, help="Manifest version")
         self.parser.add_argument('-f', '--firmware', type=argparse.FileType("rb"), required=True,
                                  help="The firmware that will be signed. Accepts only hex,bin and zip files.")
         self.parser.add_argument('-c', '--certificate_chain', type=argparse.FileType("rb"), required=True,
@@ -54,7 +54,7 @@ class Arguments:
             self.vendor_id = int(arguments.vendor_id, 16)
 
             # manifest version
-            self.manifest_version = arguments.manifest_version
+            self.manifest_version = MANIFEST_VERSION
 
             # read file
             self.firmware = arguments.firmware
