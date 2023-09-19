@@ -67,14 +67,17 @@ class Certificate_Chain:
             store.add_cert(trusted_cert)
 
         # FIXME: Load local certificates (like Codegic)
-        codegic = open(os.getcwd() + "/src/files/root2.pem", 'rb').read()
-        codegic2 = open(os.getcwd() + "/src/files/root.pem", 'rb').read()
-        x509_cert = crypto.load_certificate(
-            crypto.FILETYPE_PEM, codegic)
-        store.add_cert(x509_cert)
-        x509_cert = crypto.load_certificate(
-            crypto.FILETYPE_PEM, codegic2)
-        store.add_cert(x509_cert)
+        for local_cert in self.__LoadTrustedCertificates(os.getcwd() + "/src/files/local_certificates.pem"):
+            store.add_cert(local_cert)
+
+        # codegic = open(os.getcwd() + "/src/files/root2.pem", 'rb').read()
+        # codegic2 = open(os.getcwd() + "/src/files/root.pem", 'rb').read()
+        # x509_cert = crypto.load_certificate(
+        #     crypto.FILETYPE_PEM, codegic)
+        # store.add_cert(x509_cert)
+        # x509_cert = crypto.load_certificate(
+        #     crypto.FILETYPE_PEM, codegic2)
+        # store.add_cert(x509_cert)
 
         # if there intermmediate certificates
         if (intermediate_certificates != None):
@@ -105,7 +108,7 @@ class Certificate_Chain:
 
         return False
 
-    def __LoadTrustedCertificates(self, path):
+    def __LoadTrustedCertificates(self, path) -> List[crypto.X509]:
         trusted_certificates = []
 
         # Load the CA certificates from the bundle
@@ -114,7 +117,6 @@ class Certificate_Chain:
 
         # Create a list to store X509 certificate objects
         all_certificates = self.__DistinguishCertificates(ca_bundle)
-        all_certificates.pop(len(all_certificates)-1)
 
         # Parse and load each certificate in the bundle
         for cert in all_certificates:
