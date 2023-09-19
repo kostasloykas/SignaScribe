@@ -66,18 +66,10 @@ class Certificate_Chain:
         for trusted_cert in self.__LoadTrustedCertificates(certifi.where()):
             store.add_cert(trusted_cert)
 
-        # FIXME: Load local certificates (like Codegic)
-        for local_cert in self.__LoadTrustedCertificates(os.getcwd() + "/src/files/local_certificates.pem"):
+        # Load local certificates (like Codegic)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        for local_cert in self.__LoadTrustedCertificates(current_dir + "/files/local_certificates.pem"):
             store.add_cert(local_cert)
-
-        # codegic = open(os.getcwd() + "/src/files/root2.pem", 'rb').read()
-        # codegic2 = open(os.getcwd() + "/src/files/root.pem", 'rb').read()
-        # x509_cert = crypto.load_certificate(
-        #     crypto.FILETYPE_PEM, codegic)
-        # store.add_cert(x509_cert)
-        # x509_cert = crypto.load_certificate(
-        #     crypto.FILETYPE_PEM, codegic2)
-        # store.add_cert(x509_cert)
 
         # if there intermmediate certificates
         if (intermediate_certificates != None):
