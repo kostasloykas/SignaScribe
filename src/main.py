@@ -67,7 +67,7 @@ def main():
 
     saver = Saver(firmware, json_file, certificate_chain, signature)
     saver.SaveAllFilesIntoZip("Tilergatis.zip")
-
+    print('Zip File Saved')
     return
 
 
