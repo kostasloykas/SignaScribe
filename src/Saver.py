@@ -32,7 +32,7 @@ class Saver:
 
         with zipfile.ZipFile('build/' + zip_name, 'w') as my_zip:
             # json
-            my_zip.writestr('info.json', self.json.__str__())
+            my_zip.writestr('tilergatis_manifest.json', self.json.__str__())
 
             # firmware
             my_zip.writestr('firmware.' + self.firmware.type,
