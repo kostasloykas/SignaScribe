@@ -22,7 +22,7 @@ class JSON:
         self.firmware = firmware
         self.owner_certificate = owner_certificate
         self.public_key = public_key.public_bytes(
-            serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo).decode("utf-8")
+            serialization.Encoding.Raw, serialization.PublicFormat.Raw).hex()
 
         assert self.arguments and self.firmware and self.owner_certificate and self.public_key
 

@@ -7,6 +7,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.asymmetric.ed448 import Ed448PrivateKey
 from JSON import JSON
 from Utility_Functions import *
+from cryptography.hazmat.primitives import serialization
 
 
 SUPPORTED_PRIVATE_KEYS = Union[Ed448PrivateKey, Ed25519PrivateKey]
@@ -33,11 +34,11 @@ class Signature:
 
         # calculate hash
         self.digest = self.__CalculateHash(
-            hash_algorithm, firmware, json, certificate_chain)
+            hash_algorithm, firmware, json, certificate_chain).hex()
 
         # Sign the hash bytes
-        self.data = self.__SignDigest(self.digest)
-
+        self.data = self.__SignDigest(bytes.fromhex(self.digest)).hex()
+       
         assert (self.private_key
                 and self.sign_algorithm
                 and self.hash_algorithm
